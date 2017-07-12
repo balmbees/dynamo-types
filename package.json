@@ -1,0 +1,34 @@
+{
+  "name": "dynamo-types",
+  "version": "1.0.0",
+  "description": "DynamoDB ORM for Typescript",
+  "main": "index.js",
+  "scripts": {
+    "build": "rm -Rf dst && tsc && cd src && find . -name '*.json' -type f -exec cp {} ../dst/{} \\; && cd ..",
+    "dynamodb:cleanup": "(test -e $TMPDIR/dynamodb-local.pid && pkill -SIGINT -P $(cat $TMPDIR/dynamodb-local.pid)); rm -f $TMPDIR/dynamodb-local.pid",
+    "dynamodb:setup": "node $(npm bin)/local-dynamo --port 8000 & echo $! > $TMPDIR/dynamodb-local.pid; sleep 3",
+    "pretest": "rm -Rf dst && tsc -p ./tsconfig.test.json && cd src && find . -name '*.json' -type f -exec cp {} ../dst/{} \\; && cd .. && npm run dynamodb:cleanup && npm run dynamodb:setup",
+    "test": "VINGLE_DYNAMO_MODELS_CREATE_TABLE=1 VINGLE_DYNAMO_MODELS_USE_LOCAL_DYNAMO=1 VINGLE_DYNAMO_MODELS_NAMESPACE=test mocha -t 20000 dst/**/__test__/**/*.js",
+    "posttest": "npm run dynamodb:cleanup",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chai": "3.4.34",
+    "@types/chai-as-promised": "0.0.29",
+    "@types/cli-color": "0.3.29",
+    "@types/mocha": "2.2.32",
+    "@types/node": "6.0.52",
+    "chai": "3.5.0",
+    "chai-as-promised": "6.0.0",
+    "local-dynamo": "0.5.0",
+    "mocha": "3.1.2",
+    "typescript": "2.4.0"
+  },
+  "dependencies": {
+    "@types/aws-sdk": "2.7.0",
+    "aws-sdk": "2.77.0",
+    "reflect-metadata": "0.1.10"
+  }
+}
