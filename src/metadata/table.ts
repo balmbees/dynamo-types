@@ -1,5 +1,10 @@
 import { TableOptions } from '../decorators/table';
-import { AttributeOptions } from '../decorators/attribute';
+import { AttributeMetadata } from '../metadata/attribute';
+
+export interface TableIndexMetadata {
+  hashKey: AttributeMetadata;
+  rangeKey?: AttributeMetadata;
+}
 
 export class TableMetadata {
   constructor(
@@ -11,7 +16,11 @@ export class TableMetadata {
     return this.tableOptions.name;
   }
 
-  defineAttribute(options: AttributeOptions) {
+  private attributes: { [name: string]: AttributeMetadata } = {};
+  private defaultIndex: TableIndexMetadata;
+
+  defineAttribute(options: AttributeMetadata) {
+    // Define getter and setters for given attribute
     const descriptor =
       Object.getOwnPropertyDescriptor(this.tableObject, options.name!) || {};
 
@@ -25,5 +34,8 @@ export class TableMetadata {
     Object.defineProperty(
       this.tableObject, options.name!, descriptor
     );
+
+    // Save attribute metadata
+    this.attributes[options.name] = options;
   }
 }

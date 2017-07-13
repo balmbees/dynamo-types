@@ -5,8 +5,8 @@ export interface Table {
 }
 
 export function Table(options: TableOptions) {
-  return (target: Table) => {
-    target.metadata = new TableMetadata(target, options);
+  return (target: Function) => {
+    (target as any as Table).metadata = new TableMetadata(target, options);
   };
 }
 
