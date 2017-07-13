@@ -15,7 +15,6 @@ type ComplexAttributeType = (
 
 export type AttributeType = PrimitiveAttributeType | ComplexAttributeType;
 export interface AttributeMetadata {
-  keyType?: "hash" | "range";
   name: string;
   type: AttributeType;
 }

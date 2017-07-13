@@ -7,7 +7,6 @@ export function Attribute<T>(options: AttributeOptions) {
     const table = (object as any as Table);
 
     table.metadata.defineAttribute({
-      keyType: options.keyType,
       name: options.name || propertyKey,
       type: options.type || Reflect.getMetadata("design:type", table, propertyKey),
     });
