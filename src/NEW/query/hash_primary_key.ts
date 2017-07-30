@@ -5,18 +5,17 @@ import * as Metadata from '../metadata';
 
 import * as Codec from '../codec';
 
-import { client } from '../dynamo-client';
-
 export class HashPrimaryKey<T extends Table, HashKeyType> {
-    constructor(
+  constructor(
     public tableClass: ITable<T>,
     public tableMetadata: Metadata.Table.Metadata,
     public metadata: Metadata.Indexes.HashPrimaryKeyMetadata,
+    public documentClient: DynamoDB.DocumentClient
   ) {}
 
   async get(hashKey: HashKeyType): Promise<T | null> {
     const dynamoRecord =
-      await client.get({
+      await this.documentClient.get({
         TableName: this.tableMetadata.name,
         Key: {
           [this.metadata.hash.name]: hashKey,
@@ -35,7 +34,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     exclusiveStartKey?: DynamoDB.DocumentClient.Key,
   }) {
     const result =
-      await client.query({
+      await this.documentClient.query({
         TableName: this.tableMetadata.name,
         Limit: options.limit,
         ScanIndexForward: true,

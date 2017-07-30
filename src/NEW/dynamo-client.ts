@@ -1,5 +1,17 @@
 import { DynamoDB } from 'aws-sdk';
 
-const client = new DynamoDB.DocumentClient({ endpoint: 'http://127.0.0.1:8080'});
+export function createDocumentClient() {
+  const documentClient = new DynamoDB.DocumentClient({
+    endpoint: process.env.DYNAMO_TYPES_ENDPOINT as string,
+  });
 
-export { client as client };
+  return documentClient;
+}
+
+export function createClient() {
+  const client = new DynamoDB({
+    endpoint: process.env.DYNAMO_TYPES_ENDPOINT as string,
+  });
+
+  return client;
+}

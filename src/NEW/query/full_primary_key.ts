@@ -5,8 +5,6 @@ import * as Metadata from '../metadata';
 
 import * as Codec from '../codec';
 
-import { client } from '../dynamo-client';
-
 export type RangeKeyOperation<T> = (
   { eq: T } |
   { lt: T } |
@@ -17,16 +15,17 @@ export type RangeKeyOperation<T> = (
   { between: T, and: T }
 );
 
-export class FullPrimaryKey<T extends Table, HashKeyType, SortKeyType> {
+export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
   constructor(
     public tableClass: ITable<T>,
     public tableMetadata: Metadata.Table.Metadata,
-    public metadata: Metadata.Indexes.FullPrimaryKeyMetadata
+    public metadata: Metadata.Indexes.FullPrimaryKeyMetadata,
+    public documentClient: DynamoDB.DocumentClient
   ) {}
 
-  async get(hashKey: HashKeyType, sortKey: SortKeyType): Promise<T | null> {
+  async get(hashKey: HashKeyType, sortKey: RangeKeyType): Promise<T | null> {
     const dynamoRecord =
-      await client.get({
+      await this.documentClient.get({
         TableName: this.tableMetadata.name,
         Key: {
           [this.metadata.hash.name]: hashKey,
@@ -40,18 +39,40 @@ export class FullPrimaryKey<T extends Table, HashKeyType, SortKeyType> {
     }
   }
 
+  async batchGet(keys: Array<[HashKeyType, RangeKeyType]>) {
+    // Todo check length of keys
+
+    const res = await this.documentClient.batchGet({
+      RequestItems: {
+        [this.tableMetadata.name]: {
+          Keys: keys.map((key) => {
+            return {
+              [this.metadata.hash.name]: key[0],
+              [this.metadata.range.name]: key[1],
+            }
+          })
+        }
+      }
+    }).promise();
+
+    return {
+      records: res.Responses![this.tableMetadata.name].map(item => {
+        return Codec.deserialize(this.tableClass, this.tableMetadata, item);
+      })
+    };
+  }
+
   async query(options: {
     hash: HashKeyType,
-    range: RangeKeyOperation<SortKeyType>,
+    range: RangeKeyOperation<RangeKeyType>,
     limit?: number,
     exclusiveStartKey?: DynamoDB.DocumentClient.Key,
   }) {
     const range = options.range;
 
     const result =
-      await client.query({
+      await this.documentClient.query({
         TableName: this.tableMetadata.name,
-        // IndexName?: IndexName;
         Limit: options.limit,
         ScanIndexForward: true,
         ExclusiveStartKey: options.exclusiveStartKey,
@@ -78,21 +99,5 @@ export class FullPrimaryKey<T extends Table, HashKeyType, SortKeyType> {
     };
   }
   // async scan()
-  // /**
-  //  * Returns the attributes of one or more items from one or more tables by delegating to AWS.DynamoDB.batchGetItem().
-  //  */
   // batchGet(params: DocumentClient.BatchGetItemInput, callback?: (err: AWSError, data: DocumentClient.BatchGetItemOutput) => void): Request<DocumentClient.BatchGetItemOutput, AWSError>;
 }
-
-
-// async update()
-// /**
-//  * Edits an existing item's attributes, or adds a new item to the table if it does not already exist by delegating to AWS.DynamoDB.updateItem().
-//  */
-// update(params: DocumentClient.UpdateItemInput, callback?: (err: AWSError, data: DocumentClient.UpdateItemOutput) => void): Request<DocumentClient.UpdateItemOutput, AWSError>;
-// at data writing, you can just use model, and that's all
-
-// /**
-//  * Deletes a single item in a table by primary key by delegating to AWS.DynamoDB.deleteItem().
-//  */
-// delete(params: DocumentClient.DeleteItemInput, callback?: (err: AWSError, data: DocumentClient.DeleteItemOutput) => void): Request<DocumentClient.DeleteItemOutput, AWSError>;

@@ -8,7 +8,7 @@
     "dynamodb:cleanup": "(test -e $TMPDIR/dynamodb-local.pid && pkill -SIGINT -P $(cat $TMPDIR/dynamodb-local.pid)); rm -f $TMPDIR/dynamodb-local.pid",
     "dynamodb:setup": "node $(npm bin)/local-dynamo --port 8000 & echo $! > $TMPDIR/dynamodb-local.pid; sleep 3",
     "pretest": "rm -Rf dst && tsc -p ./tsconfig.test.json && cd src && find . -name '*.json' -type f -exec cp {} ../dst/{} \\; && cd .. && npm run dynamodb:cleanup && npm run dynamodb:setup",
-    "test": "VINGLE_DYNAMO_MODELS_CREATE_TABLE=1 VINGLE_DYNAMO_MODELS_USE_LOCAL_DYNAMO=1 VINGLE_DYNAMO_MODELS_NAMESPACE=test mocha -t 20000 dst/**/__test__/**/*.js",
+    "test": "mocha -t 20000 dst/**/__test__/**/*.js",
     "posttest": "npm run dynamodb:cleanup",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
