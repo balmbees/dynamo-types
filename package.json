@@ -29,6 +29,7 @@
   "dependencies": {
     "@types/aws-sdk": "2.7.0",
     "@types/lodash": "^4.14.71",
+    "@types/reflect-metadata": "0.0.5",
     "aws-sdk": "2.77.0",
     "dynamo-local": "0.0.4",
     "lodash": "^4.17.4",
