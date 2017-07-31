@@ -5,28 +5,24 @@ import * as Metadata from '../metadata';
 
 import * as Codec from '../codec';
 
-export type RangeKeyOperation<T> = (
-  { eq: T } |
-  { lt: T } |
-  { lte: T } |
-  { gt: T } |
-  { gte: T } |
-  { beginsWith: T } |
-  { between: T, and: T }
-);
+import * as RangeKeyOperation from './range_key_operation';
+
+const HASH_KEY_REF = "#hk";
+const HASH_VALUE_REF = ":hkv";
+
+const RANGE_KEY_REF = "#rk";
 
 export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
   constructor(
-    public tableClass: ITable<T>,
-    public tableMetadata: Metadata.Table.Metadata,
-    public metadata: Metadata.Indexes.FullPrimaryKeyMetadata,
-    public documentClient: DynamoDB.DocumentClient
+    readonly tableClass: ITable<T>,
+    readonly metadata: Metadata.Indexes.FullPrimaryKeyMetadata,
+    readonly documentClient: DynamoDB.DocumentClient
   ) {}
 
   async get(hashKey: HashKeyType, sortKey: RangeKeyType): Promise<T | null> {
     const dynamoRecord =
       await this.documentClient.get({
-        TableName: this.tableMetadata.name,
+        TableName: this.tableClass.metadata.name,
         Key: {
           [this.metadata.hash.name]: hashKey,
           [this.metadata.range!.name]: sortKey,
@@ -35,16 +31,15 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     if (!dynamoRecord.Item) {
       return null;
     } else {
-      return Codec.deserialize(this.tableClass, this.tableMetadata, dynamoRecord.Item)
+      return Codec.deserialize(this.tableClass, dynamoRecord.Item)
     }
   }
 
   async batchGet(keys: Array<[HashKeyType, RangeKeyType]>) {
     // Todo check length of keys
-
     const res = await this.documentClient.batchGet({
       RequestItems: {
-        [this.tableMetadata.name]: {
+        [this.tableClass.metadata.name]: {
           Keys: keys.map((key) => {
             return {
               [this.metadata.hash.name]: key[0],
@@ -56,48 +51,53 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     }).promise();
 
     return {
-      records: res.Responses![this.tableMetadata.name].map(item => {
-        return Codec.deserialize(this.tableClass, this.tableMetadata, item);
+      records: res.Responses![this.tableClass.metadata.name].map(item => {
+        return Codec.deserialize(this.tableClass, item);
       })
     };
   }
 
   async query(options: {
     hash: HashKeyType,
-    range: RangeKeyOperation<RangeKeyType>,
+    range?: RangeKeyOperation.Operations<RangeKeyType>,
     limit?: number,
     exclusiveStartKey?: DynamoDB.DocumentClient.Key,
   }) {
-    const range = options.range;
+    const params: DynamoDB.DocumentClient.QueryInput = {
+      TableName: this.tableClass.metadata.name,
+      Limit: options.limit,
+      ScanIndexForward: true,
+      ExclusiveStartKey: options.exclusiveStartKey,
+      ReturnConsumedCapacity: "TOTAL",
+      KeyConditionExpression: `${HASH_KEY_REF} = ${HASH_VALUE_REF}`,
+      ExpressionAttributeNames: {
+        [HASH_KEY_REF]: this.metadata.hash.name,
+        [RANGE_KEY_REF]: this.metadata.range.name,
+      },
+      ExpressionAttributeValues: {
+        [HASH_VALUE_REF]: options.hash,
+      },
+    };
 
-    const result =
-      await this.documentClient.query({
-        TableName: this.tableMetadata.name,
-        Limit: options.limit,
-        ScanIndexForward: true,
-        ExclusiveStartKey: options.exclusiveStartKey,
-        ReturnConsumedCapacity: "TOTAL",
-        KeyConditionExpression: '#hk = :hkv AND #rk > :rkv',
-        ExpressionAttributeNames:{
-          "#hk": this.metadata.hash.name,
-          "#rk": this.metadata.range!.name,
-        },
-        ExpressionAttributeValues: {
-          ':hkv': options.hash,
-          ':rkey': options.range,
-        },
-      }).promise();
+    if (options.range) {
+      const rangeKeyOptions = RangeKeyOperation.parse(options.range, RANGE_KEY_REF);
+      params.KeyConditionExpression += ` AND ${rangeKeyOptions.conditionExpression}`;
+      Object.assign(params.ExpressionAttributeValues, rangeKeyOptions.expressionAttributeValues);
+    }
+
+    const result = await this.documentClient.query(params).promise();
 
     return {
       records: (result.Items || []).map(item => {
-        return Codec.deserialize(this.tableClass, this.tableMetadata, item);
+        return Codec.deserialize(this.tableClass, item);
       }),
       count: result.Count,
       scannedCount: result.ScannedCount,
-      LastEvaluatedKey: result.LastEvaluatedKey,
-      ConsumedCapacity: result.ConsumedCapacity,
+      lastEvaluatedKey: result.LastEvaluatedKey,
+      consumedCapacity: result.ConsumedCapacity,
     };
   }
+
+  // Let'just don't use Scan if it's possible
   // async scan()
-  // batchGet(params: DocumentClient.BatchGetItemInput, callback?: (err: AWSError, data: DocumentClient.BatchGetItemOutput) => void): Request<DocumentClient.BatchGetItemOutput, AWSError>;
 }

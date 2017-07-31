@@ -1,3 +1,7 @@
+require("reflect-metadata");
+
+
+
 var dynamoLocal = require('dynamo-local');
 // dynamoLocal({port: 8000, dbPath: '.'}, function (err) { /* ... */ });
 

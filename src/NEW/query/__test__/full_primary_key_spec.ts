@@ -16,7 +16,7 @@ class Card extends Table {
   public title: string;
 }
 
-const CardMetadata: Metadata.Table.Metadata = {
+(Card as any).metadata = {
   name: "Card",
   attributes: [
     {
@@ -46,18 +46,17 @@ describe("FullPrimaryKey", () => {
   const documentClient = createDocumentClient();
 
   beforeEach(async() => {
-    await createTable(CardMetadata, client);
+    await createTable(Card.metadata, client);
 
     primaryKey = new FullPrimaryKey<Card, number, string>(
       Card,
-      CardMetadata,
-      CardMetadata.primaryKey as Metadata.Indexes.FullPrimaryKeyMetadata,
+      Card.metadata.primaryKey as Metadata.Indexes.FullPrimaryKeyMetadata,
       documentClient
     );
   });
 
   afterEach(async () => {
-    await dropTable(CardMetadata, client);
+    await dropTable(Card.metadata, client);
   });
 
   describe("#get", async () => {
@@ -68,7 +67,7 @@ describe("FullPrimaryKey", () => {
 
     it("should find item", async () => {
       await documentClient.put({
-        TableName: CardMetadata.name,
+        TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abc",
@@ -84,21 +83,21 @@ describe("FullPrimaryKey", () => {
   describe("#bacthGet", async () => {
     it("should find items", async () => {
       await documentClient.put({
-        TableName: CardMetadata.name,
+        TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abc",
         }
       }).promise();
       await documentClient.put({
-        TableName: CardMetadata.name,
+        TableName: Card.metadata.name,
         Item: {
           id: 11,
           title: "abc",
         }
       }).promise();
       await documentClient.put({
-        TableName: CardMetadata.name,
+        TableName: Card.metadata.name,
         Item: {
           id: 12,
           title: "abc",
@@ -113,9 +112,39 @@ describe("FullPrimaryKey", () => {
   });
 
 
-  describe("#query", async () => {
-    it("should find items", () => {
+  describe("#query", () => {
+    it("should find items", async () => {
+      await documentClient.put({
+        TableName: Card.metadata.name,
+        Item: {
+          id: 10,
+          title: "abc",
+        }
+      }).promise();
+      await documentClient.put({
+        TableName: Card.metadata.name,
+        Item: {
+          id: 10,
+          title: "abd",
+        }
+      }).promise();
+      await documentClient.put({
+        TableName: Card.metadata.name,
+        Item: {
+          id: 10,
+          title: "aba",
+        }
+      }).promise();
 
+      const res = await primaryKey.query({
+        hash: 10,
+        range: ["between", "abc", "abf"]
+      });
+
+      console.log(res);
+      expect(res.records.length).to.eq(2);
+      expect(res.records[0].title).to.eq("abc");
+      expect(res.records[1].title).to.eq("abd");
     });
   });
 });

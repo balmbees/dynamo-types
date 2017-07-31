@@ -16,3 +16,17 @@ export interface Metadata {
    | Indexes.HashPrimaryKeyMetadata
   );
 }
+
+export function createMetadata() {
+  return {
+    name: "",
+    attributes: [],
+  } as any as Metadata;
+}
+
+export function validateMetadata(metadata: Metadata) {
+  if (!metadata.name)
+    throw new Error("Name must be proviede for Table");
+  if (!metadata.primaryKey)
+    throw new Error("Table must have PrimaryKey");
+}

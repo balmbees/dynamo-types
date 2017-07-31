@@ -42,12 +42,11 @@ import * as AttributeValue from './attribute_value';
 
 export function deserialize<T extends Table>(
   tableClass: ITable<T>,
-  tableMetadata: TableMetadata.Metadata,
   dynamoAttributes: DynamoDB.DocumentClient.AttributeMap
 ): T {
   const record = new tableClass();
 
-  tableMetadata.attributes.forEach(attributeMetadata => {
+  tableClass.metadata.attributes.forEach(attributeMetadata => {
     const attributeValue = dynamoAttributes[attributeMetadata.name] as NativeTypes;
     if (!attributeValue) {
       // attribute is defined but not provided by DynamoDB
