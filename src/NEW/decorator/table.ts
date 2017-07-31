@@ -1,5 +1,5 @@
 import * as Metadata from '../metadata';
-import { ITable } from '../table';
+import { ITable, Table as TableClass } from '../table';
 import * as Query from '../query';
 import * as Config from '../config';
 
@@ -24,11 +24,12 @@ function defineAttributeProperties(table: ITable<any>) {
       table.prototype,
       attr.name,
       {
-        get: function() {
-
+        enumerable: true,
+        get: function(this:TableClass) {
+          return this.getAttribute(attr.name);
         },
-        set: function(v) {
-
+        set: function(this:TableClass, v) {
+          this.setAttribute(attr.name, v);
         },
       }
     );

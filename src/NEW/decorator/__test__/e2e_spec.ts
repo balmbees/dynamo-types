@@ -30,4 +30,11 @@ describe.only("Table Decorator", () => {
   it("should create primaryKey", () => {
     expect(Card.primaryKey).to.be.instanceof(Query.FullPrimaryKey);
   });
+
+  it("should have attributes properties", () => {
+    const card = new Card();
+    card.id = 10;
+    card.title = "100";
+    console.log(card);
+  });
 });
