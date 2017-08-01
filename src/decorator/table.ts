@@ -1,7 +1,7 @@
 import * as Metadata from '../metadata';
 import { ITable, Table as TableClass } from '../table';
 import * as Query from '../query';
-import * as Config from '../config';
+import Config from '../config';
 
 // Table Decorator
 export function Table(options: { name?: string } = {}) {
@@ -24,6 +24,7 @@ function defineAttributeProperties(table: ITable<any>) {
       table.prototype,
       attr.name,
       {
+        configurable: true,
         enumerable: true,
         get: function(this:TableClass) {
           return this.getAttribute(attr.name);

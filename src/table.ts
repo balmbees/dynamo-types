@@ -3,10 +3,20 @@ import * as Metadata from "./metadata";
 import * as Query from "./query";
 
 import * as _ from "lodash";
+import Config from './config';
 
 export class Table {
   // This will be setted by Decorator
   static metadata: Metadata.Table.Metadata = Metadata.Table.createMetadata();
+
+  // Table Operations
+  static async createTable() {
+    await Query.TableOperations.createTable(this.metadata, Config.client);
+  }
+  static async dropTable() {
+    await Query.TableOperations.dropTable(this.metadata, Config.client);
+  }
+
 
   // raw storage for all attributes this record (instance) has
   private __attributes: { [key: string]: any } = {};

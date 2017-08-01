@@ -1,4 +1,4 @@
-import * as Metadata from '../metadata';
+import * as Metadata from '../../metadata';
 
 import { DynamoDB } from 'aws-sdk';
 
@@ -56,6 +56,5 @@ export async function createTable(metadata: Metadata.Table.Metadata, client: Dyn
     // StreamSpecification?: StreamSpecification;
   };
   const res = await client.createTable(params).promise();
-  // console.log(res);
-  return res;
+  return res.TableDescription;
 }

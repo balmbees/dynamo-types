@@ -4,6 +4,7 @@ const expect = chai.expect;
 import { Table as TableDecorator } from '../table';
 import { Attribute as AttributeDecorator } from '../attribute';
 import { FullPrimaryKey as FullPrimaryKeyDecorator } from '../full_primary_key';
+import { Writer as WriterDecorator } from '../writer';
 
 import * as Query from '../../query';
 
@@ -20,9 +21,12 @@ class Card extends Table {
 
   @FullPrimaryKeyDecorator('id', 'title')
   static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
+
+  @WriterDecorator()
+  static readonly writer: Query.Writer<Card>;
 }
 
-describe.only("Table Decorator", () => {
+describe("Table Decorator", () => {
   it("should build table metadata", () => {
     expect(Card.metadata.name).eq("prod-Card");
   });
@@ -31,10 +35,16 @@ describe.only("Table Decorator", () => {
     expect(Card.primaryKey).to.be.instanceof(Query.FullPrimaryKey);
   });
 
+  it("should have writer", () => {
+    expect(Card.writer).to.be.instanceof(Query.Writer);
+  });
+
   it("should have attributes properties", () => {
     const card = new Card();
     card.id = 10;
     card.title = "100";
+
+
     console.log(card);
   });
 });

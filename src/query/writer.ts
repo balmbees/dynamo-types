@@ -6,10 +6,11 @@ import { DynamoDB } from 'aws-sdk';
 
 import * as Codec from '../codec';
 
-class Writer<T extends Table> {
+export class Writer<T extends Table> {
   constructor(
     private tableClass: ITable<T>,
-    private documentClient: DynamoDB.DocumentClient) {
+    private documentClient: DynamoDB.DocumentClient
+  ) {
   }
 
   async put(record: T) {

@@ -3,3 +3,6 @@ export { Attribute } from './attribute';
 
 export { FullPrimaryKey } from './full_primary_key';
 export { HashPrimaryKey } from './hash_primary_key';
+
+// Helpers
+export { Writer } from './writer';

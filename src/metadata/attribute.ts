@@ -1,4 +1,4 @@
-export enum Type {
+export const enum Type {
   Buffer = "B",
   Boolean = "BOOL",
   String = "S",

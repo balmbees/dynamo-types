@@ -33,6 +33,6 @@ describe("#deserialize", () => {
       }
     );
 
-    expect(record.id).to.eq(10);
+    expect(record.getAttribute("id")).to.eq(10);
   });
 });

@@ -6,57 +6,43 @@ import * as Metadata from '../../metadata';
 
 import { FullPrimaryKey } from '../full_primary_key';
 
-import { createTable } from '../create_table';
-import { dropTable } from '../drop_table';
+import {
+  Table as TableDecorator,
+  Attribute as AttributeDecorator,
+  FullPrimaryKey as FullPrimaryKeyDecorator,
+} from '../../decorator';
 
-import { createClient, createDocumentClient } from '../../dynamo-client';
+import * as TableOperations from '../table_operations';
+import * as Query from '../index';
+import Config from '../../config';
 
+@TableDecorator({ name: "prod-Card" })
 class Card extends Table {
+  @AttributeDecorator()
   public id: number;
-  public title: string;
-}
 
-(Card as any).metadata = {
-  name: "Card",
-  attributes: [
-    {
-      name: 'id',
-      type: Metadata.Attribute.Type.Number,
-    }, {
-      name: 'title',
-      type: Metadata.Attribute.Type.String,
-    },
-  ],
-  primaryKey: {
-    type: 'FULL',
-    hash: {
-      name: 'id',
-      type: Metadata.Attribute.Type.Number,
-    },
-    range: {
-      name: 'title',
-      type: Metadata.Attribute.Type.String,
-    }
-  }
-};
+  @AttributeDecorator()
+  public title: string;
+
+  @FullPrimaryKeyDecorator('id', 'title')
+  static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
+}
 
 describe("FullPrimaryKey", () => {
   let primaryKey: FullPrimaryKey<Card, number, string>;
-  const client = createClient();
-  const documentClient = createDocumentClient();
 
   beforeEach(async() => {
-    await createTable(Card.metadata, client);
+    await TableOperations.createTable(Card.metadata, Config.client);
 
     primaryKey = new FullPrimaryKey<Card, number, string>(
       Card,
       Card.metadata.primaryKey as Metadata.Indexes.FullPrimaryKeyMetadata,
-      documentClient
+      Config.documentClient
     );
   });
 
   afterEach(async () => {
-    await dropTable(Card.metadata, client);
+    await TableOperations.dropTable(Card.metadata, Config.client);
   });
 
   describe("#get", async () => {
@@ -66,7 +52,7 @@ describe("FullPrimaryKey", () => {
     });
 
     it("should find item", async () => {
-      await documentClient.put({
+      await Config.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
@@ -82,21 +68,21 @@ describe("FullPrimaryKey", () => {
 
   describe("#bacthGet", async () => {
     it("should find items", async () => {
-      await documentClient.put({
+      await Config.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abc",
         }
       }).promise();
-      await documentClient.put({
+      await Config.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 11,
           title: "abc",
         }
       }).promise();
-      await documentClient.put({
+      await Config.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 12,
@@ -114,21 +100,21 @@ describe("FullPrimaryKey", () => {
 
   describe("#query", () => {
     it("should find items", async () => {
-      await documentClient.put({
+      await Config.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abc",
         }
       }).promise();
-      await documentClient.put({
+      await Config.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abd",
         }
       }).promise();
-      await documentClient.put({
+      await Config.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
