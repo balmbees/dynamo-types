@@ -5,6 +5,7 @@ import { ITable, Table } from '../table';
 import { DynamoDB } from 'aws-sdk';
 
 import * as Codec from '../codec';
+import * as Metadata from '../metadata';
 
 export class Writer<T extends Table> {
   constructor(
@@ -35,5 +36,28 @@ export class Writer<T extends Table> {
         }),
       }
     }).promise();
+  }
+
+  async delete(record: T) {
+    await this.documentClient.delete({
+      TableName: this.tableClass.metadata.name,
+      Key: KeyFromRecord(record, this.tableClass.metadata.primaryKey),
+    })
+  }
+}
+
+function KeyFromRecord<T extends Table>(
+  record: T,
+  metadata: Metadata.Indexes.FullPrimaryKeyMetadata | Metadata.Indexes.HashPrimaryKeyMetadata
+) {
+  if (metadata.type == 'HASH') {
+    return {
+      [metadata.hash.name]: record.getAttribute(metadata.hash.name)
+    };
+  } else {
+    return {
+      [metadata.hash.name]: record.getAttribute(metadata.hash.name),
+      [metadata.range.name]: record.getAttribute(metadata.range.name)
+    };
   }
 }

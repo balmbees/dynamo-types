@@ -8,7 +8,6 @@ import {
   Config,
 } from '../index';
 
-
 describe("Table", () => {
   @Decorator.Table({ name: "prod-Card" })
   class Card extends Table {
@@ -44,12 +43,16 @@ describe("Table", () => {
     expect(Card.writer).to.be.instanceof(Query.Writer);
   });
 
-  it("should have attributes properties", () => {
+  it("should have attributes properties", async () => {
     const card = new Card();
     card.id = 10;
     card.title = "100";
 
+    await card.save();
 
-    console.log(card);
+    const reloadedCard = await Card.primaryKey.get(10, "100");
+    expect(reloadedCard).to.be.instanceof(Card);
+    expect(reloadedCard!.id).to.eq(10);
+    expect(reloadedCard!.title).to.eq("100");
   });
 });

@@ -17,7 +17,6 @@ export class Table {
     await Query.TableOperations.dropTable(this.metadata, Config.client);
   }
 
-
   // raw storage for all attributes this record (instance) has
   private __attributes: { [key: string]: any } = {};
 
@@ -33,6 +32,23 @@ export class Table {
     _.forEach(attributes, (value, name) => {
       this.setAttribute(name, value);
     });
+  }
+
+  private __writer: Query.Writer<Table>;
+  private get writer() {
+    if (!this.__writer) {
+      this.__writer = new Query.Writer(
+        (this.constructor as ITable<Table>),
+        Config.documentClient
+      );
+    }
+    return this.__writer;
+  }
+  public async save() {
+    return await this.writer.put(this);
+  }
+  public async delete() {
+    return await this.writer.delete(this);
   }
 
   serialize() {
