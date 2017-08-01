@@ -1,3 +1,8 @@
-Metadata defines the "Table", and it's sub-elements,
-such as "Index" (including default, global, secondary..)
-and "Attributes" of index
+[![Travis Build Status](https://travis-ci.org/breath103/dynamo-typeorm.svg?branch=master)](https://travis-ci.org/breath103/dynamo-typeorm)
+[![npm version](https://badge.fury.io/js/vingle-corgi.svg)](https://badge.fury.io/js/vingle-corgi)
+
+# DynamoTypes
+Typescript ORM of DynamoDB, written from scrach to fully support the DynamoDB
+
+## Features
+1. Object Mapping / Typing
