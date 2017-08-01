@@ -5,8 +5,6 @@ import * as _ from 'lodash';
 
 export function FullPrimaryKey(hashKeyName: string, rangeKeyName: string) {
   return (tableClass: ITable<any>, propertyKey: string) => {
-    console.log("tableClass : ", tableClass);
-
     const hash = _.find(tableClass.metadata.attributes, (attr) => attr.name === hashKeyName);
     if (!hash)
       throw new Error(`Given hashKey ${hashKeyName} is not declared as attribute`);

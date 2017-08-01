@@ -127,7 +127,6 @@ describe("FullPrimaryKey", () => {
         range: ["between", "abc", "abf"]
       });
 
-      console.log(res);
       expect(res.records.length).to.eq(2);
       expect(res.records[0].title).to.eq("abc");
       expect(res.records[1].title).to.eq("abd");

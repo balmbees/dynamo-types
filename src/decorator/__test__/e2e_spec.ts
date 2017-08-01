@@ -43,8 +43,5 @@ describe("Table Decorator", () => {
     const card = new Card();
     card.id = 10;
     card.title = "100";
-
-
-    console.log(card);
   });
 });

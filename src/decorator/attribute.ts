@@ -6,14 +6,8 @@ export function Attribute<T>(options: {
   name?: string;
 } = {}) {
   return (record: Table, propertyKey: string) => {
-    console.log("Attribute");
-    console.log(record, propertyKey);
-
     const tableClass = (record.constructor as ITable<any>);
-
     const nativeType = Reflect.getMetadata("design:type", record, propertyKey);
-
-    console.log(tableClass.metadata);
 
     tableClass.metadata.attributes.push(
       {
@@ -21,8 +15,6 @@ export function Attribute<T>(options: {
         type: _nativeTypeToAttributeMetadataType(nativeType),
       }
     );
-
-    console.log(tableClass.metadata);
   }
 }
 
