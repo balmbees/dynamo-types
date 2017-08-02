@@ -19,6 +19,9 @@ class Card extends Table {
   @AttributeDecorator()
   public title: string;
 
+  @AttributeDecorator({ name: "complicated_field"})
+  public complicatedField: string;
+
   @FullPrimaryKeyDecorator('id', 'title')
   static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
 
@@ -43,5 +46,11 @@ describe("Table Decorator", () => {
     const card = new Card();
     card.id = 10;
     card.title = "100";
+
+    card.complicatedField = "data";
+    expect(card.getAttribute("complicated_field")).to.eq("data");
+
+    card.setAttribute("complicated_field", "data2");
+    expect(card.complicatedField).to.eq("data2");
   });
 });

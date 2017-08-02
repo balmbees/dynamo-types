@@ -6,7 +6,7 @@ import * as Indexes from './indexes';
 // - Indexes
 
 export interface Metadata {
-  name: string; // name of the table
+  name: string; // name of the table on DynamoDB
   attributes: Attribute.Metadata[]; // List of attributes this table has
   // indexes: IndexMetadata[]; // List of Indexes this table has
 

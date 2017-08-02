@@ -22,7 +22,7 @@ function defineAttributeProperties(table: ITable<any>) {
   table.metadata.attributes.forEach(attr => {
     Object.defineProperty(
       table.prototype,
-      attr.name,
+      attr.propertyName,
       {
         configurable: true,
         enumerable: true,

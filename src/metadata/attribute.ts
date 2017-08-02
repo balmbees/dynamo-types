@@ -12,7 +12,8 @@ export const enum Type {
 }
 
 export interface Metadata {
-  name: string;
+  name: string; // Name on DynamoDB
+  propertyName: string; // Mapped property name on TS Object
   type: Type;
 }
 

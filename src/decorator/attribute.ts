@@ -2,16 +2,15 @@ import { Attribute as AttributeMetadata } from '../metadata';
 import { Table, ITable } from '../table';
 
 // Table Decorator
-export function Attribute<T>(options: {
-  name?: string;
-} = {}) {
-  return (record: Table, propertyKey: string) => {
+export function Attribute<T>(options: { name?: string; } = {}) {
+  return (record: Table, propertyName: string) => {
     const tableClass = (record.constructor as ITable<any>);
-    const nativeType = Reflect.getMetadata("design:type", record, propertyKey);
+    const nativeType = Reflect.getMetadata("design:type", record, propertyName);
 
     tableClass.metadata.attributes.push(
       {
-        name: options.name || propertyKey,
+        name: options.name || propertyName,
+        propertyName: propertyName,
         type: _nativeTypeToAttributeMetadataType(nativeType),
       }
     );
