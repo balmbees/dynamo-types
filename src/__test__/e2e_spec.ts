@@ -17,6 +17,9 @@ describe("Table", () => {
     @Decorator.Attribute()
     public title: string;
 
+    @Decorator.Attribute({ timeToLive: true })
+    public expiresAt: number;
+
     @Decorator.FullPrimaryKey('id', 'title')
     static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
 
@@ -54,5 +57,23 @@ describe("Table", () => {
     expect(reloadedCard).to.be.instanceof(Card);
     expect(reloadedCard!.id).to.eq(10);
     expect(reloadedCard!.title).to.eq("100");
+  });
+
+  // https://github.com/aws/aws-sdk-js/issues/1527
+  // TTL doesn't supported at dynamo-local Yet
+  xit("should works with TTL", async () => {
+    const card = new Card();
+    card.id = 10;
+    card.title = "100";
+    card.expiresAt = ((new Date()).valueOf() / 1000) + 100;
+    await card.save();
+
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 300);
+    });
+
+    const reloadCard = await Card.primaryKey.get(10, "100");
+    console.log(reloadCard);
+    expect(reloadCard).to.be.null;
   });
 });

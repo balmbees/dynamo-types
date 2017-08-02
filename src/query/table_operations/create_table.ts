@@ -55,6 +55,20 @@ export async function createTable(metadata: Metadata.Table.Metadata, client: Dyn
     },
     // StreamSpecification?: StreamSpecification;
   };
+
   const res = await client.createTable(params).promise();
+
+  // TTL
+  const ttlAttribute = metadata.attributes.find(attr => !!attr.timeToLive);
+  if (ttlAttribute) {
+    await client.updateTimeToLive({
+      TableName: metadata.name,
+      TimeToLiveSpecification: {
+        Enabled: true,
+        AttributeName: ttlAttribute.name,
+      }
+    });
+  }
+
   return res.TableDescription;
 }
