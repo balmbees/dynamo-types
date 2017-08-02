@@ -5,8 +5,6 @@ import * as Metadata from '../metadata';
 
 import * as Codec from '../codec';
 
-import * as RangeKeyOperation from './range_key_operation';
-
 const HASH_KEY_REF = "#hk";
 const HASH_VALUE_REF = ":hkv";
 
@@ -18,6 +16,15 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     readonly metadata: Metadata.Indexes.HashPrimaryKeyMetadata,
     readonly documentClient: DynamoDB.DocumentClient
   ) {}
+
+  async delete(hashKey: HashKeyType) {
+    const res = await this.documentClient.delete({
+      TableName: this.tableClass.metadata.name,
+      Key: {
+        [this.metadata.hash.name]: hashKey,
+      },
+    }).promise();
+  }
 
   async get(hashKey: HashKeyType): Promise<T | null> {
     const dynamoRecord =

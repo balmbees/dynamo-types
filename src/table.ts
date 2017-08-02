@@ -7,7 +7,15 @@ import Config from './config';
 
 export class Table {
   // This will be setted by Decorator
-  static metadata: Metadata.Table.Metadata = Metadata.Table.createMetadata();
+  static get metadata() {
+    if (!(this as any).__metadata) {
+      (this as any).__metadata = Metadata.Table.createMetadata();
+    }
+    return (this as any).__metadata as Metadata.Table.Metadata;
+  }
+  static set metadata(metadata: Metadata.Table.Metadata) {
+    (this as any).__metadata = metadata;
+  }
 
   // Table Operations
   static async createTable() {

@@ -12,7 +12,6 @@ import {
   FullPrimaryKey as FullPrimaryKeyDecorator,
 } from '../../decorator';
 
-import * as TableOperations from '../table_operations';
 import * as Query from '../index';
 import Config from '../../config';
 
@@ -35,7 +34,7 @@ describe("FullPrimaryKey", () => {
   let primaryKey: FullPrimaryKey<Card, number, string>;
 
   beforeEach(async() => {
-    await TableOperations.createTable(Card.metadata, Config.client);
+    await Card.createTable();
 
     primaryKey = new FullPrimaryKey<Card, number, string>(
       Card,
@@ -45,7 +44,28 @@ describe("FullPrimaryKey", () => {
   });
 
   afterEach(async () => {
-    await TableOperations.dropTable(Card.metadata, Config.client);
+    await Card.dropTable();
+  });
+
+  describe("#delete", async () => {
+    it("should delete item if exist", async () => {
+      await Config.documentClient.put({
+        TableName: Card.metadata.name,
+        Item: {
+          id: 10,
+          title: "abc",
+        }
+      }).promise();
+
+      await primaryKey.delete(10, "abc");
+
+      expect(await primaryKey.get(10, "abc")).to.be.null;
+    });
+
+    // it("should return false if item not exist", async () => {
+    //   const deleted = await primaryKey.delete(10, "abc");
+    //   expect(deleted).to.be.false;
+    // });
   });
 
   describe("#get", async () => {

@@ -19,6 +19,17 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     readonly documentClient: DynamoDB.DocumentClient
   ) {}
 
+  async delete(hashKey: HashKeyType, sortKey: RangeKeyType) {
+    const res = await this.documentClient.delete({
+      TableName: this.tableClass.metadata.name,
+      // ReturnValues: "ALL_OLD",
+      Key: {
+        [this.metadata.hash.name]: hashKey,
+        [this.metadata.range.name]: sortKey,
+      },
+    }).promise();
+  }
+
   async get(hashKey: HashKeyType, sortKey: RangeKeyType): Promise<T | null> {
     const dynamoRecord =
       await this.documentClient.get({
