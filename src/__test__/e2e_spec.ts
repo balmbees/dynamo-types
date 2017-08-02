@@ -17,7 +17,8 @@ describe("Table", () => {
     @Decorator.Attribute()
     public title: string;
 
-    @Decorator.Attribute({ timeToLive: true })
+    // @Decorator.Attribute({ timeToLive: true })
+    @Decorator.Attribute()
     public expiresAt: number;
 
     @Decorator.FullPrimaryKey('id', 'title')

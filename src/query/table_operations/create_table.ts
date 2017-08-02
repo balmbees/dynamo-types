@@ -58,6 +58,28 @@ export async function createTable(metadata: Metadata.Table.Metadata, client: Dyn
 
   const res = await client.createTable(params).promise();
 
+  // Wait until table is "ready"
+  let tableIsReady = false
+  while (tableIsReady) {
+    // Sleep
+    await new Promise((resolve, reject) => setTimeout(resolve, 500));
+
+    const res = await client.describeTable({ TableName: metadata.name }).promise();
+    const tableStatus = res.Table!.TableStatus;
+    //  * The current state of the table: CREATING - The table is being created.UPDATING - The table is being updated.DELETING - The table is being deleted.ACTIVE - The table is ready for use.
+
+    switch (tableStatus) {
+      case "CREATING":
+      case "UPDATING":
+      case "DELETING": {
+        // Can't handle those status
+      } break;
+      case "ACTIVE": {
+        tableIsReady = true;
+      } break;
+    }
+  }
+
   // TTL
   const ttlAttribute = metadata.attributes.find(attr => !!attr.timeToLive);
   if (ttlAttribute) {
@@ -67,7 +89,7 @@ export async function createTable(metadata: Metadata.Table.Metadata, client: Dyn
         Enabled: true,
         AttributeName: ttlAttribute.name,
       }
-    });
+    }).promise();
   }
 
   return res.TableDescription;
