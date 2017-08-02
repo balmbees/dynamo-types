@@ -29,4 +29,18 @@ export function validateMetadata(metadata: Metadata) {
     throw new Error("Name must be proviede for Table");
   if (!metadata.primaryKey)
     throw new Error("Table must have PrimaryKey");
+
+  // TTL
+  const ttlAttributes = metadata.attributes.filter(attribute => attribute.timeToLive);
+  if (ttlAttributes.length > 1) {
+    throw new Error("TTL attribute must be one");
+  } else if (ttlAttributes.length == 1) {
+    const ttlAttribute = ttlAttributes[0];
+
+    if (ttlAttribute.type != Attribute.Type.Number) {
+      throw new Error("TTL Attribute must be type of Number, with value of unix timestamp such as 1460232057");
+    }
+  } else {
+    // no TTL Attribute, pass
+  }
 }
