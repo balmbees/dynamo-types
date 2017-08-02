@@ -24,6 +24,9 @@ class Card extends Table {
   @AttributeDecorator()
   public title: string;
 
+  @AttributeDecorator()
+  public count: number;
+
   @FullPrimaryKeyDecorator('id', 'title')
   static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
 }
@@ -130,6 +133,20 @@ describe("FullPrimaryKey", () => {
       expect(res.records.length).to.eq(2);
       expect(res.records[0].title).to.eq("abc");
       expect(res.records[1].title).to.eq("abd");
+    });
+  });
+
+  describe("#update", () => {
+    it("should be able to update items", async () => {
+      await primaryKey.update(10, "abc", { count: ["ADD", 1] });
+
+      let card = await primaryKey.get(10, "abc");
+      expect(card!.count).to.eq(1);
+
+      await primaryKey.update(10, "abc", { count: ["ADD", 2] });
+
+      card = await primaryKey.get(10, "abc");
+      expect(card!.count).to.eq(3);
     });
   });
 });

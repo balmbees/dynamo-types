@@ -1,10 +1,10 @@
 import { DynamoDB } from 'aws-sdk';
+import * as _ from 'lodash';
 
 import { Table, ITable } from '../table';
+
 import * as Metadata from '../metadata';
-
 import * as Codec from '../codec';
-
 import * as RangeKeyOperation from './range_key_operation';
 
 const HASH_KEY_REF = "#hk";
@@ -25,7 +25,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
         TableName: this.tableClass.metadata.name,
         Key: {
           [this.metadata.hash.name]: hashKey,
-          [this.metadata.range!.name]: sortKey,
+          [this.metadata.range.name]: sortKey,
         },
       }).promise();
     if (!dynamoRecord.Item) {
@@ -100,4 +100,37 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
 
   // Let'just don't use Scan if it's possible
   // async scan()
+
+  async update(
+    hashKey: HashKeyType,
+    sortKey: RangeKeyType,
+    changes: {
+      [key: string]: [
+        DynamoDB.DocumentClient.AttributeAction,
+        any
+      ],
+    },
+  ): Promise<void> {
+    let attributeUpdates: DynamoDB.DocumentClient.AttributeUpdates = {};
+
+    this.tableClass.metadata.attributes.forEach(attr => {
+      const change = changes[attr.propertyName];
+      if (change) {
+        attributeUpdates[attr.name] = {
+          Action: change[0],
+          Value: change[1],
+        };
+      }
+    });
+
+    const dynamoRecord =
+      await this.documentClient.update({
+        TableName: this.tableClass.metadata.name,
+        Key: {
+          [this.metadata.hash.name]: hashKey,
+          [this.metadata.range.name]: sortKey,
+        },
+        AttributeUpdates: attributeUpdates,
+      }).promise();
+  }
 }

@@ -57,4 +57,35 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
 
   // Let'just don't use Scan if it's possible
   // async scan()
+  async update(
+    hashKey: HashKeyType,
+    changes: {
+      [key: string]: [
+        DynamoDB.DocumentClient.AttributeAction,
+        any
+      ],
+    },
+  ): Promise<void> {
+    // Select out only declared Attributes
+    let attributeUpdates: DynamoDB.DocumentClient.AttributeUpdates = {};
+
+    this.tableClass.metadata.attributes.forEach(attr => {
+      const change = changes[attr.propertyName];
+      if (change) {
+        attributeUpdates[attr.name] = {
+          Action: change[0],
+          Value: change[1],
+        };
+      }
+    });
+
+    const dynamoRecord =
+      await this.documentClient.update({
+        TableName: this.tableClass.metadata.name,
+        Key: {
+          [this.metadata.hash.name]: hashKey,
+        },
+        AttributeUpdates: attributeUpdates,
+      }).promise();
+  }
 }
