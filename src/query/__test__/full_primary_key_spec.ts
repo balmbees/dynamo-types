@@ -145,7 +145,7 @@ describe("FullPrimaryKey", () => {
         }
       }).promise();
 
-      const res = await primaryKey.query({
+      let res = await primaryKey.query({
         hash: 10,
         range: ["between", "abc", "abf"]
       });
@@ -153,6 +153,16 @@ describe("FullPrimaryKey", () => {
       expect(res.records.length).to.eq(2);
       expect(res.records[0].title).to.eq("abc");
       expect(res.records[1].title).to.eq("abd");
+
+      res = await primaryKey.query({
+        hash: 10,
+        range: ["between", "abc", "abf"],
+        rangeOrder: "DESC",
+      });
+
+      expect(res.records.length).to.eq(2);
+      expect(res.records[0].title).to.eq("abd");
+      expect(res.records[1].title).to.eq("abc");
     });
   });
 

@@ -71,19 +71,24 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
   async query(options: {
     hash: HashKeyType,
     range?: RangeKeyOperation.Operations<RangeKeyType>,
+    rangeOrder?: "ASC" | "DESC",
     limit?: number,
     exclusiveStartKey?: DynamoDB.DocumentClient.Key,
   }) {
+    if (!options.rangeOrder) {
+      options.rangeOrder = "ASC";
+    }
+    const ScanIndexForward = options.rangeOrder === "ASC"
+
     const params: DynamoDB.DocumentClient.QueryInput = {
       TableName: this.tableClass.metadata.name,
       Limit: options.limit,
-      ScanIndexForward: true,
+      ScanIndexForward: ScanIndexForward,
       ExclusiveStartKey: options.exclusiveStartKey,
       ReturnConsumedCapacity: "TOTAL",
       KeyConditionExpression: `${HASH_KEY_REF} = ${HASH_VALUE_REF}`,
       ExpressionAttributeNames: {
         [HASH_KEY_REF]: this.metadata.hash.name,
-        [RANGE_KEY_REF]: this.metadata.range.name,
       },
       ExpressionAttributeValues: {
         [HASH_VALUE_REF]: options.hash,
@@ -93,6 +98,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     if (options.range) {
       const rangeKeyOptions = RangeKeyOperation.parse(options.range, RANGE_KEY_REF);
       params.KeyConditionExpression += ` AND ${rangeKeyOptions.conditionExpression}`;
+      Object.assign(params.ExpressionAttributeNames, { [RANGE_KEY_REF]: this.metadata.range.name });
       Object.assign(params.ExpressionAttributeValues, rangeKeyOptions.expressionAttributeValues);
     }
 
