@@ -5,9 +5,15 @@
 Typescript ORM of DynamoDB, written from scrach to fully support the DynamoDB
 
 ## Features
-1. Object Mapping / Typing
-
-
+1. DynamoDB record -> TS Class object with typing
+2. CreateTable / DropTable
+3. PrimaryKey 
+   a. FullPrimaryKey (Hash, Range)
+   b. HashPrimaryKey (Hash)
+4. Attribute
+   a. Type Support (Number / String / Boolean / Array / Object / Buffer)
+   b. TimeToLive Support
+   
 ## Usage
 ```typescript
   @Decorator.Table({ name: "prod-Card" })
