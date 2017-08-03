@@ -23,6 +23,9 @@ Typescript ORM of DynamoDB, written from scrach to fully support the DynamoDB
 
     @Decorator.Attribute()
     public title: string;
+    
+    @Decorator.Attribute({ timeToLive: true })
+    public expiresAt: number;
 
     @Decorator.FullPrimaryKey('id', 'title')
     static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
@@ -42,7 +45,10 @@ Typescript ORM of DynamoDB, written from scrach to fully support the DynamoDB
   const card = new Card();
   card.id = 100;
   card.title = "Title";
+  // 
   await Card.writer.put(card);
+  // OR just
+  await card.save();
 
   // Batch Put
   await Card.writer.batchPut([
@@ -54,12 +60,14 @@ Typescript ORM of DynamoDB, written from scrach to fully support the DynamoDB
   await Card.primaryKey.get(100, "Title");
 
   // BatchGet
+  // This array's are strongly typed, so don't worry.
   await Card.primaryKey.batchGet([
     [100, "Title"],
     [200, "Title2"]
   ])
 
   // Query
+  // Range key opreation is also stringly typed also
   await Card.primaryKey.query({
     hash: 100,
     range: [">=", "Title"]
