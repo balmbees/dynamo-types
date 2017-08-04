@@ -42,3 +42,4 @@ jspm_packages
 .node_repl_history
 
 .serverless
+.DS_Store
