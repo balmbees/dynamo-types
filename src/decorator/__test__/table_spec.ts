@@ -11,7 +11,7 @@ import * as Query from '../../query';
 
 import { Table } from '../../table';
 
-@TableDecorator({ name: "prod-Card" })
+@TableDecorator({ name: "prod-Card1" })
 class Card extends Table {
   @AttributeDecorator()
   public id: number;
@@ -31,7 +31,7 @@ class Card extends Table {
 
 describe("Table Decorator", () => {
   it("should build table metadata", () => {
-    expect(Card.metadata.name).eq("prod-Card");
+    expect(Card.metadata.name).eq("prod-Card1");
   });
 
   it("should create primaryKey", () => {

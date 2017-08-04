@@ -15,7 +15,7 @@ import { Table } from '../../table';
 
 import Config from '../../config';
 
-@TableDecorator({ name: "prod-Card" })
+@TableDecorator({ name: "prod-Card4" })
 class Card extends Table {
   @AttributeDecorator()
   public id: number;

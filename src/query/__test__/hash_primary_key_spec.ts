@@ -17,7 +17,7 @@ import Config from '../../config';
 
 
 describe("HashPrimaryKey", () => {
-  @TableDecorator({ name: "prod-card" })
+  @TableDecorator({ name: "prod-card3" })
   class Card extends Table {
     @AttributeDecorator()
     public id: number;
