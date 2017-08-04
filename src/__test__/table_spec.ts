@@ -9,7 +9,7 @@ import {
 } from '../index';
 
 describe("Table", () => {
-  @Decorator.Table({ name: "prod-Card" })
+  @Decorator.Table({ name: `prod-Card${Math.random()}` })
   class Card extends Table {
     @Decorator.Attribute()
     public id: number;
@@ -24,6 +24,9 @@ describe("Table", () => {
     @Decorator.FullPrimaryKey('id', 'title')
     static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
 
+    @Decorator.HashGlobalSecondaryIndex('title')
+    static readonly titleIndex: Query.HashGlobalSecondaryIndex<Card, string>;
+
     @Decorator.Writer()
     static readonly writer: Query.Writer<Card>;
   }
@@ -33,10 +36,6 @@ describe("Table", () => {
   });
   afterEach(async () => {
     await Card.dropTable();
-  });
-
-  it("should build table metadata", () => {
-    expect(Card.metadata.name).eq("prod-Card");
   });
 
   it("should create primaryKey", () => {

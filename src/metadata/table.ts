@@ -8,8 +8,11 @@ import * as Indexes from './indexes';
 export interface Metadata {
   name: string; // name of the table on DynamoDB
   attributes: Attribute.Metadata[]; // List of attributes this table has
-  // indexes: IndexMetadata[]; // List of Indexes this table has
-
+  globalSecondaryIndexes: Array<
+    Indexes.FullGlobalSecondaryIndexMetadata
+    | Indexes.HashGlobalSecondaryIndexMetadata
+  >;
+  localSecondaryIndexes: Indexes.LocalSecondaryIndexMetadata[];
   // Default Index, which every table must have
   primaryKey: (
     Indexes.FullPrimaryKeyMetadata
@@ -21,6 +24,8 @@ export function createMetadata() {
   return {
     name: "",
     attributes: [],
+    globalSecondaryIndexes: [],
+    localSecondaryIndexes: [],
   } as any as Metadata;
 }
 

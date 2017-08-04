@@ -18,3 +18,26 @@ export interface FullPrimaryKeyMetadata {
   readonly hash: Attribute.Metadata;
   readonly range: Attribute.Metadata;
 }
+
+export interface FullGlobalSecondaryIndexMetadata {
+  readonly type: 'FULL';
+  readonly name: string;
+  readonly propertyName: string;
+  readonly hash: Attribute.Metadata;
+  readonly range: Attribute.Metadata;
+}
+
+export interface HashGlobalSecondaryIndexMetadata {
+  readonly type: 'HASH';
+  readonly name: string;
+  readonly propertyName: string;
+  readonly hash: Attribute.Metadata;
+}
+
+export interface LocalSecondaryIndexMetadata {
+  readonly name: string;
+  readonly propertyName: string;
+  // LocalSecondaryIndex Must have same hash key from primaryKey anyway.
+  // readonly hash: Attribute.Metadata;
+  readonly range: Attribute.Metadata;
+}

@@ -15,6 +15,9 @@ export function Table(options: { name?: string } = {}) {
     // After validation, setup some methods.
     defineAttributeProperties(target);
     definePrimaryKeyProperty(target);
+
+    defineGlobalSecondaryIndexes(target);
+    defineLocalSecondaryIndexes(target);
   };
 }
 
@@ -32,6 +35,43 @@ function defineAttributeProperties(table: ITable<any>) {
         set: function(this:TableClass, v) {
           this.setAttribute(attr.name, v);
         },
+      }
+    );
+  });
+}
+
+function defineGlobalSecondaryIndexes(table: ITable<any>) {
+  table.metadata.globalSecondaryIndexes.forEach(metadata => {
+    if (metadata.type === 'HASH') {
+      Object.defineProperty(
+        table,
+        metadata.propertyName,
+        {
+          value: new Query.HashGlobalSecondaryIndex(table, metadata, Config.documentClient),
+          writable: false,
+        }
+      );
+    } else {
+      Object.defineProperty(
+        table,
+        metadata.propertyName,
+        {
+          value: new Query.FullGlobalSecondaryIndex(table, metadata, Config.documentClient),
+          writable: false,
+        }
+      );
+    }
+  });
+}
+
+function defineLocalSecondaryIndexes(table: ITable<any>) {
+  table.metadata.localSecondaryIndexes.forEach(metadata => {
+    Object.defineProperty(
+      table,
+      metadata.propertyName,
+      {
+        value: new Query.LocalSecondaryIndex(table, metadata, Config.documentClient),
+        writable: false,
       }
     );
   });

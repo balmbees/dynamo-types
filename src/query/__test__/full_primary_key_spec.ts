@@ -15,22 +15,22 @@ import {
 import * as Query from '../index';
 import Config from '../../config';
 
-@TableDecorator({ name: "prod-Card" })
-class Card extends Table {
-  @AttributeDecorator()
-  public id: number;
-
-  @AttributeDecorator()
-  public title: string;
-
-  @AttributeDecorator()
-  public count: number;
-
-  @FullPrimaryKeyDecorator('id', 'title')
-  static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
-}
-
 describe("FullPrimaryKey", () => {
+  @TableDecorator({ name: "prod-Card2" })
+  class Card extends Table {
+    @AttributeDecorator()
+    public id: number;
+
+    @AttributeDecorator()
+    public title: string;
+
+    @AttributeDecorator()
+    public count: number;
+
+    @FullPrimaryKeyDecorator('id', 'title')
+    static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
+  }
+
   let primaryKey: FullPrimaryKey<Card, number, string>;
 
   beforeEach(async() => {
