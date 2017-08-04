@@ -1,5 +1,5 @@
 [![Travis Build Status](https://travis-ci.org/breath103/dynamo-typeorm.svg?branch=master)](https://travis-ci.org/breath103/dynamo-typeorm)
-[![npm version](https://badge.fury.io/js/vingle-corgi.svg)](https://badge.fury.io/js/vingle-corgi)
+[![npm version](https://badge.fury.io/js/dynamo-types.svg)](https://badge.fury.io/js/dynamo-types)
 
 # DynamoTypes
 Typescript ORM of DynamoDB, written from scrach to fully support the DynamoDB
