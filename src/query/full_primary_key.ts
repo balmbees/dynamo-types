@@ -68,6 +68,24 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     };
   }
 
+  async batchDelete(keys: Array<[HashKeyType, RangeKeyType]>) {
+    const res =
+      await this.documentClient.batchWrite({
+        RequestItems: {
+          [this.tableClass.metadata.name]: keys.map(key => {
+            return {
+              DeleteRequest: {
+                Key: {
+                  [this.metadata.hash.name]: key[0],
+                  [this.metadata.range.name]: key[1],
+                },
+              },
+            };
+          }),
+        }
+      }).promise();
+  }
+
   async query(options: {
     hash: HashKeyType,
     range?: RangeKeyOperation.Operations<RangeKeyType>,
