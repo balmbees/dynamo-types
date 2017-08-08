@@ -2,8 +2,8 @@ import { DynamoDB } from 'aws-sdk';
 
 import { Table, ITable } from '../table';
 import * as Metadata from '../metadata';
-
 import * as Codec from '../codec';
+import { batchWrite } from "./batch_write";
 
 const HASH_KEY_REF = "#hk";
 const HASH_VALUE_REF = ":hkv";
@@ -64,20 +64,19 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
 
 
   async batchDelete(keys: Array<[HashKeyType]>) {
-    const res =
-      await this.documentClient.batchWrite({
-        RequestItems: {
-          [this.tableClass.metadata.name]: keys.map(key => {
-            return {
-              DeleteRequest: {
-                Key: {
-                  [this.metadata.hash.name]: key[0],
-                },
-              },
-            };
-          }),
-        }
-      }).promise();
+    return await batchWrite(
+      this.documentClient,
+      this.tableClass.metadata.name,
+      keys.map(key => {
+        return {
+          DeleteRequest: {
+            Key: {
+              [this.metadata.hash.name]: key[0],
+            },
+          },
+        };
+      }),
+    );
   }
 
   // Let'just don't use Scan if it's possible

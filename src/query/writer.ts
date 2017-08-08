@@ -6,6 +6,7 @@ import { DynamoDB } from 'aws-sdk';
 
 import * as Codec from '../codec';
 import * as Metadata from '../metadata';
+import { batchWrite } from './batch_write';
 
 export class Writer<T extends Table> {
   constructor(
@@ -25,17 +26,17 @@ export class Writer<T extends Table> {
   }
 
   async batchPut(records: T[]) {
-    const res = await this.documentClient.batchWrite({
-      RequestItems: {
-        [this.tableClass.metadata.name]: records.map(record => {
-          return {
-            PutRequest: {
-              Item: Codec.serialize(this.tableClass, record),
-            },
-          };
-        }),
-      }
-    }).promise();
+    return await batchWrite(
+      this.documentClient,
+      this.tableClass.metadata.name,
+      records.map(record => {
+        return {
+          PutRequest: {
+            Item: Codec.serialize(this.tableClass, record),
+          },
+        };
+      })
+    );
   }
 
   async delete(record: T) {
