@@ -62,6 +62,24 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     };
   }
 
+
+  async batchDelete(keys: Array<[HashKeyType]>) {
+    const res =
+      await this.documentClient.batchWrite({
+        RequestItems: {
+          [this.tableClass.metadata.name]: keys.map(key => {
+            return {
+              DeleteRequest: {
+                Key: {
+                  [this.metadata.hash.name]: key[0],
+                },
+              },
+            };
+          }),
+        }
+      }).promise();
+  }
+
   // Let'just don't use Scan if it's possible
   // async scan()
   async update(
