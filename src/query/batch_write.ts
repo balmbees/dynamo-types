@@ -9,16 +9,21 @@ export async function batchWrite(
   tableName: string,
   requests: DynamoDB.DocumentClient.WriteRequest[]
 ) {
-  const res = await Promise.all(
-    _.chunk(requests, MAX_ITEMS)
-      .map(async chunk => {
-        const res =
-          await documentClient.batchWrite({
-            RequestItems: {
-              [tableName]: chunk,
-            }
-          }).promise();
-        return res;
-      })
-  );
+  try {
+    const res = await Promise.all(
+      _.chunk(requests, MAX_ITEMS)
+        .map(async chunk => {
+          const res =
+            await documentClient.batchWrite({
+              RequestItems: {
+                [tableName]: chunk,
+              }
+            }).promise();
+          return res;
+        })
+    );
+  } catch (e) {
+    console.log(`Dynamo-Types batchWrite - ${JSON.stringify(requests, null, 2)}`);
+    throw e;
+  }
 }

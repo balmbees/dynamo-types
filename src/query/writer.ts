@@ -16,13 +16,18 @@ export class Writer<T extends Table> {
   }
 
   async put(record: T) {
-    const res = await this.documentClient.put({
-      TableName: this.tableClass.metadata.name,
-      Item: Codec.serialize(this.tableClass, record),
-    }).promise();
+    try {
+      const res = await this.documentClient.put({
+        TableName: this.tableClass.metadata.name,
+        Item: Codec.serialize(this.tableClass, record),
+      }).promise();
 
-    record.setAttributes(res.Attributes || {});
-    return record;
+      record.setAttributes(res.Attributes || {});
+      return record;
+    } catch (e) {
+      console.log(`Dynamo-Types Put - ${JSON.stringify(record, null, 2)}`);
+      throw e;
+    }
   }
 
   async batchPut(records: T[]) {
