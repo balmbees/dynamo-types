@@ -8,6 +8,7 @@ import * as Codec from '../codec';
 import * as RangeKeyOperation from './range_key_operation';
 
 import { batchWrite } from "./batch_write";
+import { batchGet } from "./batch_get";
 
 const HASH_KEY_REF = "#hk";
 const HASH_VALUE_REF = ":hkv";
@@ -49,22 +50,19 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
   }
 
   async batchGet(keys: Array<[HashKeyType, RangeKeyType]>) {
-    // Todo check length of keys
-    const res = await this.documentClient.batchGet({
-      RequestItems: {
-        [this.tableClass.metadata.name]: {
-          Keys: keys.map((key) => {
-            return {
-              [this.metadata.hash.name]: key[0],
-              [this.metadata.range.name]: key[1],
-            }
-          })
+    const res = await batchGet(
+      this.documentClient,
+      this.tableClass.metadata.name,
+      keys.map((key) => {
+        return {
+          [this.metadata.hash.name]: key[0],
+          [this.metadata.range.name]: key[1],
         }
-      }
-    }).promise();
+      })
+    );
 
     return {
-      records: res.Responses![this.tableClass.metadata.name].map(item => {
+      records: res.map(item => {
         return Codec.deserialize(this.tableClass, item);
       })
     };

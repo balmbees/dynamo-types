@@ -1,3 +1,4 @@
+import * as faker from 'faker';
 import * as chai from 'chai';
 const expect = chai.expect;
 
@@ -61,11 +62,6 @@ describe("FullPrimaryKey", () => {
 
       expect(await primaryKey.get(10, "abc")).to.be.null;
     });
-
-    // it("should return false if item not exist", async () => {
-    //   const deleted = await primaryKey.delete(10, "abc");
-    //   expect(deleted).to.be.false;
-    // });
   });
 
   describe("#get", async () => {
@@ -113,8 +109,12 @@ describe("FullPrimaryKey", () => {
         }
       }).promise();
 
-      const items = (await primaryKey.batchGet([ [10, "abc"], [11, "abc"] ])).records;
+      const items = (await primaryKey.batchGet([
+        [10, "abc"],
+        [11, "abc"]
+      ])).records;
       expect(items.length).to.eq(2);
+
       expect(items[0].id).to.eq(10);
       expect(items[1].id).to.eq(11);
     });
