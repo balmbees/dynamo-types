@@ -3,7 +3,9 @@ import { DynamoDB } from 'aws-sdk';
 import { Table, ITable } from '../table';
 import * as Metadata from '../metadata';
 import * as Codec from '../codec';
+
 import { batchWrite } from "./batch_write";
+import { batchGet } from "./batch_get";
 
 const HASH_KEY_REF = "#hk";
 const HASH_VALUE_REF = ":hkv";
@@ -42,21 +44,18 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
   }
 
   async batchGet(keys: Array<HashKeyType>) {
-    // Todo check length of keys
-    const res = await this.documentClient.batchGet({
-      RequestItems: {
-        [this.tableClass.metadata.name]: {
-          Keys: keys.map((key) => {
-            return {
-              [this.metadata.hash.name]: key,
-            }
-          })
+    const res = await batchGet(
+      this.documentClient,
+      this.tableClass.metadata.name,
+      keys.map((key) => {
+        return {
+          [this.metadata.hash.name]: key,
         }
-      }
-    }).promise();
+      })
+    );
 
     return {
-      records: res.Responses![this.tableClass.metadata.name].map(item => {
+      records: res.map(item => {
         return Codec.deserialize(this.tableClass, item);
       })
     };
