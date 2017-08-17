@@ -1,7 +1,11 @@
-import { DynamoDB } from 'aws-sdk';
+import * as AWS from "aws-sdk";
+import { DynamoDB } from "aws-sdk";
+
+const enableAWSXray = process.env.ENABLE_XRAY === "true";
+const AWSXRay = require("aws-xray-sdk-core");
 
 export default class Config {
-  private static __documentClient: DynamoDB.DocumentClient;
+  private static __documentClient: AWS.DynamoDB.DocumentClient;
   public static get documentClient() {
     if (!this.__documentClient) {
       throw new Error("Not initialized");
@@ -9,7 +13,7 @@ export default class Config {
     return this.__documentClient;
   }
 
-  private static __client: DynamoDB;
+  private static __client: AWS.DynamoDB;
   public static get client() {
     if (!this.__client) {
       throw new Error("Not initialized");
@@ -19,15 +23,26 @@ export default class Config {
 
   static initalize(
     options: {
-      endpoint?: string
+      endpoint?: string,
+      enableAWSXray?: boolean,
     } = {}
   ) {
-    this.__documentClient = new DynamoDB.DocumentClient({
-      endpoint: options.endpoint || process.env.DYNAMO_TYPES_ENDPOINT as string,
-    });
-    this.__client = new DynamoDB({
-      endpoint: options.endpoint || process.env.DYNAMO_TYPES_ENDPOINT as string,
-    });
+    if (enableAWSXray || options.enableAWSXray) {
+      const aws = AWSXRay.captureAWS(AWS);
+      this.__documentClient = new aws.DynamoDB.DocumentClient({
+        endpoint: options.endpoint || process.env.DYNAMO_TYPES_ENDPOINT as string,
+      });
+      this.__client = new aws.DynamoDB({
+        endpoint: options.endpoint || process.env.DYNAMO_TYPES_ENDPOINT as string,
+      });
+    } else {
+      this.__documentClient = new DynamoDB.DocumentClient({
+        endpoint: options.endpoint || process.env.DYNAMO_TYPES_ENDPOINT as string,
+      });
+      this.__client = new DynamoDB({
+        endpoint: options.endpoint || process.env.DYNAMO_TYPES_ENDPOINT as string,
+      });
+    }
   }
 }
 

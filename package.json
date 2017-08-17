@@ -1,6 +1,6 @@
 {
   "name": "dynamo-types",
-  "version": "1.5.5",
+  "version": "1.5.8",
   "description": "DynamoDB ORM for Typescript",
   "main": "./dst/index.js",
   "typings": "./dst/index.d.ts",
@@ -31,9 +31,10 @@
     "local-dynamo": "0.5.0",
     "mocha": "3.1.2",
     "publish": "^0.6.0",
-    "typescript": "2.4.0"
+    "typescript": "2.4.2"
   },
   "dependencies": {
+    "@types/aws-sdk": "^2.7.0",
     "@types/lodash": "^4.14.71",
     "@types/reflect-metadata": "0.0.5",
     "aws-sdk": "^2.99.0",
