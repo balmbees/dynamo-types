@@ -13,7 +13,13 @@ Typescript ORM of DynamoDB, written from scrach to fully support the DynamoDB
 4. Attribute
    - Type Support (Number / String / Boolean / Array / Object / Buffer)
    - TimeToLive
-   
+
+Also, dynamo-types let you overcome several limits that dynamoDB (or it's sdk has)
+1. BatchWrite (batchDelete / batchPut) has limit of maximum 25 items per request.
+   - dynamo-types automatically split given items to chunk of 25 and sends requests
+2. BatchGet has limit of maximum 100 items per requests
+   - dynamo-types automatically split given keys to chunk of 25 and sends requests in parallel
+
 ## Usage
 ```typescript
   @Decorator.Table({ name: "prod-Card" })
