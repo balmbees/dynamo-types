@@ -6,6 +6,7 @@ import * as Codec from '../codec';
 
 import { batchWrite } from "./batch_write";
 import { batchGet } from "./batch_get";
+import * as Scan from "./scan";
 
 const HASH_KEY_REF = "#hk";
 const HASH_VALUE_REF = ":hkv";
@@ -43,6 +44,35 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     }
   }
 
+  async scan(options: {
+    limit?: number,
+    totalSegments?: number,
+    segment?: number,
+    FilterExpression?: string,
+    exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+  }) {
+    const params: DynamoDB.DocumentClient.ScanInput = {
+      TableName: this.tableClass.metadata.name,
+      Limit: options.limit,
+      ExclusiveStartKey: options.exclusiveStartKey,
+      ReturnConsumedCapacity: "TOTAL",
+      TotalSegments: options.totalSegments,
+      Segment: options.segment,
+    };
+
+    const result = await this.documentClient.scan(params).promise();
+
+    return {
+      records: (result.Items || []).map(item => {
+        return Codec.deserialize(this.tableClass, item);
+      }),
+      count: result.Count,
+      scannedCount: result.ScannedCount,
+      lastEvaluatedKey: result.LastEvaluatedKey,
+      consumedCapacity: result.ConsumedCapacity,
+    };
+  }
+
   async batchGet(keys: Array<HashKeyType>) {
     const res = await batchGet(
       this.documentClient,
@@ -60,7 +90,6 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
       })
     };
   }
-
 
   async batchDelete(keys: Array<[HashKeyType]>) {
     return await batchWrite(

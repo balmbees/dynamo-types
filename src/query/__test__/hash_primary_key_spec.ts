@@ -3,6 +3,8 @@ import * as faker from 'faker';
 
 const expect = chai.expect;
 
+import * as _ from 'lodash';
+
 import { Table } from '../../table';
 import * as Metadata from '../../metadata';
 
@@ -63,6 +65,35 @@ describe("HashPrimaryKey", () => {
       await primaryKey.delete(10);
     });
   });
+
+  describe("#scan", async () => {
+    it("should return results", async () => {
+      async function createCard() {
+        const card = new Card();
+        card.id = faker.random.number();
+        await card.save();
+        return card;
+      }
+
+      const cards = [
+        await createCard(),
+        await createCard(),
+        await createCard(),
+        await createCard(),
+      ];
+
+      const res1 = await primaryKey.scan({ limit: 2 });
+      const res2 = await primaryKey.scan({ limit: 2, exclusiveStartKey: res1.lastEvaluatedKey });
+
+      const ids = _.sortBy(
+        _.concat(res1.records, res2.records),
+        (item) => item.id
+      ).map(c => c.id);
+
+      expect(ids).to.deep.eq( _.sortBy(cards.map(c => c.id), i => i) );
+    });
+  });
+
 
   describe("#batchGet", async () => {
     it ("should return results in order", async () => {

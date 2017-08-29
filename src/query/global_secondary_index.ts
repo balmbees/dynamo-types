@@ -5,7 +5,7 @@ import { Table, ITable } from '../table';
 
 import * as Metadata from '../metadata';
 import * as Codec from '../codec';
-import * as RangeKeyOperation from './range_key_operation';
+import * as Query from './query';
 
 const HASH_KEY_REF = "#hk";
 const HASH_VALUE_REF = ":hkv";
@@ -21,7 +21,7 @@ export class FullGlobalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType
 
   async query(options: {
     hash: HashKeyType,
-    range?: RangeKeyOperation.Operations<RangeKeyType>,
+    range?: Query.Conditions<RangeKeyType>,
     rangeOrder?: "ASC" | "DESC",
     limit?: number,
     exclusiveStartKey?: DynamoDB.DocumentClient.Key,
@@ -48,7 +48,7 @@ export class FullGlobalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType
     };
 
     if (options.range) {
-      const rangeKeyOptions = RangeKeyOperation.parse(options.range, RANGE_KEY_REF);
+      const rangeKeyOptions = Query.parseCondition(options.range, RANGE_KEY_REF);
       params.KeyConditionExpression += ` AND ${rangeKeyOptions.conditionExpression}`;
       Object.assign(params.ExpressionAttributeNames, { [RANGE_KEY_REF]: this.metadata.range.name });
       Object.assign(params.ExpressionAttributeValues, rangeKeyOptions.expressionAttributeValues);
