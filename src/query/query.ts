@@ -1,4 +1,4 @@
-export type Operations<T> = (
+export type Conditions<T> = (
   ["=", T]
   | ["<", T]
   | ["<=", T]
@@ -8,32 +8,32 @@ export type Operations<T> = (
   | ["between", T, T]
 );
 
-export function parse<T>(operation: Operations<T>, rangeKeyName: string) {
-  switch (operation[0]) {
+export function parseCondition<T>(condition: Conditions<T>, rangeKeyName: string) {
+  switch (condition [0]) {
     case "=":
     case "<":
     case "<=":
     case ">":
     case ">=":
       return {
-        conditionExpression: `${rangeKeyName} ${operation[0]} :rkv`,
+        conditionExpression: `${rangeKeyName} ${condition [0]} :rkv`,
         expressionAttributeValues: {
-          ':rkv': operation[1],
+          ':rkv': condition [1],
         },
       };
     case "beginsWith":
       return {
         conditionExpression: `begins_with(${rangeKeyName}, :rkv)`,
         expressionAttributeValues: {
-          ':rkv': operation[1],
+          ':rkv': condition [1],
         },
       };
     case "between":
       return {
         conditionExpression: `${rangeKeyName} between :rkv1 AND :rkv2`,
         expressionAttributeValues: {
-          ':rkv1': operation[1],
-          ':rkv2': operation[2],
+          ':rkv1': condition [1],
+          ':rkv2': condition [2],
         },
       };
   }

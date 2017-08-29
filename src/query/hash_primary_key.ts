@@ -6,6 +6,7 @@ import * as Codec from '../codec';
 
 import { batchWrite } from "./batch_write";
 import { batchGet } from "./batch_get";
+import * as Scan from "./scan";
 
 const HASH_KEY_REF = "#hk";
 const HASH_VALUE_REF = ":hkv";
@@ -43,6 +44,53 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     }
   }
 
+  // async query(options: {
+  //   hash: HashKeyType,
+  //   range?: Query.Conditions<RangeKeyType>,
+  //   rangeOrder?: "ASC" | "DESC",
+  //   limit?: number,
+  //   exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+  // }) {
+  //   if (!options.rangeOrder) {
+  //     options.rangeOrder = "ASC";
+  //   }
+  //   const ScanIndexForward = options.rangeOrder === "ASC"
+
+  //   const params: DynamoDB.DocumentClient.QueryInput = {
+  //     TableName: this.tableClass.metadata.name,
+  //     Limit: options.limit,
+  //     ScanIndexForward: ScanIndexForward,
+  //     ExclusiveStartKey: options.exclusiveStartKey,
+  //     ReturnConsumedCapacity: "TOTAL",
+  //     KeyConditionExpression: `${HASH_KEY_REF} = ${HASH_VALUE_REF}`,
+  //     ExpressionAttributeNames: {
+  //       [HASH_KEY_REF]: this.metadata.hash.name,
+  //     },
+  //     ExpressionAttributeValues: {
+  //       [HASH_VALUE_REF]: options.hash,
+  //     },
+  //   };
+
+  //   if (options.range) {
+  //     const rangeKeyOptions = Query.parseCondition(options.range, RANGE_KEY_REF);
+  //     params.KeyConditionExpression += ` AND ${rangeKeyOptions.conditionExpression}`;
+  //     Object.assign(params.ExpressionAttributeNames, { [RANGE_KEY_REF]: this.metadata.range.name });
+  //     Object.assign(params.ExpressionAttributeValues, rangeKeyOptions.expressionAttributeValues);
+  //   }
+
+  //   const result = await this.documentClient.query(params).promise();
+
+  //   return {
+  //     records: (result.Items || []).map(item => {
+  //       return Codec.deserialize(this.tableClass, item);
+  //     }),
+  //     count: result.Count,
+  //     scannedCount: result.ScannedCount,
+  //     lastEvaluatedKey: result.LastEvaluatedKey,
+  //     consumedCapacity: result.ConsumedCapacity,
+  //   };
+  // }
+
   async batchGet(keys: Array<HashKeyType>) {
     const res = await batchGet(
       this.documentClient,
@@ -60,7 +108,6 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
       })
     };
   }
-
 
   async batchDelete(keys: Array<[HashKeyType]>) {
     return await batchWrite(
