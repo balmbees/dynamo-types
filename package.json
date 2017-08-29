@@ -1,6 +1,6 @@
 {
   "name": "dynamo-types",
-  "version": "1.5.8",
+  "version": "1.5.9",
   "description": "DynamoDB ORM for Typescript",
   "main": "./dst/index.js",
   "typings": "./dst/index.d.ts",
