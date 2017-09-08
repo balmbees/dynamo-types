@@ -48,7 +48,7 @@ export class Writer<T extends Table> {
     await this.documentClient.delete({
       TableName: this.tableClass.metadata.name,
       Key: KeyFromRecord(record, this.tableClass.metadata.primaryKey),
-    })
+    }).promise();
   }
 }
 
