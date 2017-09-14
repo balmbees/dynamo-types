@@ -1,7 +1,7 @@
 import * as chai from 'chai';
 const expect = chai.expect;
 
-import { deserialize } from '../deserialize';
+import { deserialize, unmarshal } from '../deserialize';
 import * as Metadata from '../../metadata';
 
 import { Table } from '../../table';
@@ -29,6 +29,9 @@ class Falsy extends Table {
   public bar: boolean;
   public baz: null;
   public baq: string;
+  public vin: Array<number>;
+  public gle: Array<string>;
+  public qqq: Object
 }
 (Falsy as any).metadata = {
   name: "falsy",
@@ -44,6 +47,15 @@ class Falsy extends Table {
   }, {
     name: "baq",
     type: Metadata.Attribute.Type.String,
+  }, {
+    name: "vin",
+    type: Metadata.Attribute.Type.Array,
+  }, {
+    name: "gle",
+    type: Metadata.Attribute.Type.Array,
+  }, {
+    name: "qqq",
+    type: Metadata.Attribute.Type.Map,
   }],
   primaryKey: {
     type: "HASH",
@@ -81,5 +93,61 @@ describe("#deserialize", () => {
     expect(record.getAttribute("bar")).to.be.eq(false);
     expect(record.getAttribute("baz")).to.be.eq(null);
     expect(record.getAttribute("baq")).to.be.eq("");
+  });
+});
+
+describe("#unmarshal", () => {
+  it("should unmarshal data", () => {
+    const record = unmarshal(
+      Card,
+      {
+        id: {
+          N: "10",
+        },
+      }
+    );
+
+    expect(record.getAttribute("id")).to.eq(10);
+  });
+
+  it("should preserve falsy values", () => {
+    const record = unmarshal(
+      Falsy,
+      {
+        foo: {
+          N: "0",
+        },
+        bar: {
+          BOOL: false,
+        },
+        baz: {
+          NULL: true,
+        },
+        baq: {
+          S: "",
+        },
+        vin: {
+          NS: ["1", "2", "3"],
+        },
+        gle: {
+          SS: ["hello", "world"],
+        },
+        qqq: {
+          M: {
+            id: {
+              N: "12312"
+            },
+          },
+        },
+      }
+    );
+
+    expect(record.getAttribute("foo")).to.be.eq(0);
+    expect(record.getAttribute("bar")).to.be.eq(false);
+    expect(record.getAttribute("baz")).to.be.eq(null);
+    expect(record.getAttribute("baq")).to.be.eq("");
+    expect(record.getAttribute("vin")).to.be.deep.eq([1, 2, 3]);
+    expect(record.getAttribute("gle")).to.be.deep.eq(["hello", "world"]);
+    expect(record.getAttribute("qqq")).to.be.deep.eq({ id: 12312 });
   });
 });

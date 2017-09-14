@@ -4,8 +4,10 @@ import {
 } from '../metadata';
 import { Table, ITable } from '../table';
 import { DynamoDB } from 'aws-sdk';
+import * as _ from "lodash";
 
 import * as AttributeValue from './attribute_value';
+
 
 export function deserialize<T extends Table>(
   tableClass: ITable<T>,
@@ -25,4 +27,17 @@ export function deserialize<T extends Table>(
   });
 
   return record;
+}
+
+export function unmarshal<T extends Table>(
+  tableClass: ITable<T>,
+  dynamoAttributes: DynamoDB.AttributeMap
+): T {
+  const result = DynamoDB.Converter.unmarshall(dynamoAttributes);
+  _.map(result, (val, key) => {
+    if (val !== null && typeof(val) === "object" && val.values && val.type) {
+      result[key] = val.values;
+    }
+  });
+  return deserialize(tableClass, result);
 }
