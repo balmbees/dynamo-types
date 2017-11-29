@@ -66,7 +66,7 @@ Also, dynamo-types let you overcome several limits that dynamoDB (or it's sdk ha
   await Card.primaryKey.get(100, "Title");
 
   // BatchGet
-  // This array's are strongly typed, so don't worry.
+  // This array is strongly typed such as Array<[number, string]> so don't worry.
   await Card.primaryKey.batchGet([
     [100, "Title"],
     [200, "Title2"]
