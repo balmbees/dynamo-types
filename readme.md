@@ -83,3 +83,31 @@ Also, dynamo-types let you overcome several limits that dynamoDB (or it's sdk ha
   await card.delete()
 
 ```
+
+
+```
+import {
+  Config,
+  Decorator,
+  Query,
+  Table,
+} from "dynamo-types";
+
+@Decorator.Table({ name: `table_name` })
+export class CardStat extends Table {
+  @Decorator.HashPrimaryKey("card_id")
+  public static readonly primaryKey: Query.HashPrimaryKey<CardStat, number>;
+
+  @Decorator.Writer()
+  public static readonly writer: Query.Writer<CardStat>;
+
+  @Decorator.Attribute({ name: "card_id" })
+  public cardId: number;
+
+  @Decorator.Attribute({ name: "impressions_count" })
+  public impressionsCount: number = 0;
+
+  @Decorator.Attribute({ name: "shares" })
+  public shares: number = 0;
+}
+```
