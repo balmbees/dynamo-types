@@ -25,6 +25,7 @@ export class LocalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType> {
     rangeOrder?: "ASC" | "DESC",
     limit?: number,
     exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+    consistent?: boolean
   }) {
     if (!options.rangeOrder) {
       options.rangeOrder = "ASC";
@@ -45,6 +46,7 @@ export class LocalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType> {
       ExpressionAttributeValues: {
         [HASH_VALUE_REF]: options.hash,
       },
+      ConsistentRead: options.consistent,
     };
 
     if (options.range) {

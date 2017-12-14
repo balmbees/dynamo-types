@@ -25,6 +25,7 @@ export class FullGlobalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType
     rangeOrder?: "ASC" | "DESC",
     limit?: number,
     exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+    consistent?: boolean,
   }) {
     if (!options.rangeOrder) {
       options.rangeOrder = "ASC";
@@ -45,6 +46,7 @@ export class FullGlobalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType
       ExpressionAttributeValues: {
         [HASH_VALUE_REF]: options.hash,
       },
+      ConsistentRead: options.consistent,
     };
 
     if (options.range) {
@@ -75,7 +77,7 @@ export class HashGlobalSecondaryIndex<T extends Table, HashKeyType> {
     readonly documentClient: DynamoDB.DocumentClient
   ) {}
 
-  async query(hash: HashKeyType, options: { limit?: number } = {}) {
+  async query(hash: HashKeyType, options: { limit?: number, consistent?: boolean } = {}) {
     const params: DynamoDB.DocumentClient.QueryInput = {
       TableName: this.tableClass.metadata.name,
       IndexName: this.metadata.name,
@@ -88,6 +90,7 @@ export class HashGlobalSecondaryIndex<T extends Table, HashKeyType> {
       ExpressionAttributeValues: {
         [HASH_VALUE_REF]: hash,
       },
+      ConsistentRead: options.consistent,
     };
 
     const result = await this.documentClient.query(params).promise();
