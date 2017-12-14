@@ -29,13 +29,14 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     }).promise();
   }
 
-  async get(hashKey: HashKeyType): Promise<T | null> {
+  async get(hashKey: HashKeyType, options: { consistent: boolean } = { consistent: false }): Promise<T | null> {
     const dynamoRecord =
       await this.documentClient.get({
         TableName: this.tableClass.metadata.name,
         Key: {
           [this.metadata.hash.name]: hashKey,
         },
+        ConsistentRead: options.consistent,
       }).promise();
     if (!dynamoRecord.Item) {
       return null;

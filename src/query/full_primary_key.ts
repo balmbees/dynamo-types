@@ -33,7 +33,12 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     }).promise();
   }
 
-  async get(hashKey: HashKeyType, sortKey: RangeKeyType): Promise<T | null> {
+  /**
+   * @param hashKey - HashKey
+   * @param sortKey - sortKey
+   * @param options - read options. consistent means "strongly consistent" or not
+   */
+  async get(hashKey: HashKeyType, sortKey: RangeKeyType, options: { consistent: boolean } = { consistent: false } ): Promise<T | null> {
     const dynamoRecord =
       await this.documentClient.get({
         TableName: this.tableClass.metadata.name,
@@ -41,6 +46,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
           [this.metadata.hash.name]: hashKey,
           [this.metadata.range.name]: sortKey,
         },
+        ConsistentRead: options.consistent,
       }).promise();
     if (!dynamoRecord.Item) {
       return null;
@@ -91,6 +97,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     rangeOrder?: "ASC" | "DESC",
     limit?: number,
     exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+    consistent?: boolean,
   }) {
     if (!options.rangeOrder) {
       options.rangeOrder = "ASC";
@@ -110,6 +117,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
       ExpressionAttributeValues: {
         [HASH_VALUE_REF]: options.hash,
       },
+      ConsistentRead: options.consistent
     };
 
     if (options.range) {
