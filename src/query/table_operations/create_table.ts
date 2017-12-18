@@ -3,7 +3,7 @@ import * as Metadata from '../../metadata';
 import { DynamoDB } from 'aws-sdk';
 import * as _ from 'lodash';
 
-export async function createTable(metadata: Metadata.Table.Metadata, client: DynamoDB) {
+export async function createTable(metadata: Metadata.Table.Metadata) {
   let KeySchema: DynamoDB.Types.KeySchema;
   let AttributeDefinitions: DynamoDB.Types.AttributeDefinitions;
 
@@ -131,14 +131,14 @@ export async function createTable(metadata: Metadata.Table.Metadata, client: Dyn
     // StreamSpecification?: StreamSpecification;
   };
 
-  const res = await client.createTable(params).promise();
+  const res = await metadata.connection.client.createTable(params).promise();
 
-  await client.waitFor("tableExists", { TableName: metadata.name}).promise();
+  await metadata.connection.client.waitFor("tableExists", { TableName: metadata.name}).promise();
 
   // TTL
   const ttlAttribute = metadata.attributes.find(attr => !!attr.timeToLive);
   if (ttlAttribute) {
-    await client.updateTimeToLive({
+    await metadata.connection.client.updateTimeToLive({
       TableName: metadata.name,
       TimeToLiveSpecification: {
         Enabled: true,

@@ -2,8 +2,6 @@ import * as Metadata from '../metadata';
 import { Table, ITable } from '../table';
 import * as Query from '../query';
 
-import Config from '../config';
-
 import * as _ from 'lodash';
 
 // Writer is pretty much "Helper" method.
@@ -15,7 +13,7 @@ export function Writer() {
       tableClass,
       propertyKey,
       {
-        value: new Query.Writer(tableClass, Config.documentClient),
+        value: new Query.Writer(tableClass),
         writable: false,
       }
     );

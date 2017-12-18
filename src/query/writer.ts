@@ -9,15 +9,12 @@ import * as Metadata from '../metadata';
 import { batchWrite } from './batch_write';
 
 export class Writer<T extends Table> {
-  constructor(
-    private tableClass: ITable<T>,
-    private documentClient: DynamoDB.DocumentClient
-  ) {
+  constructor(private tableClass: ITable<T>) {
   }
 
   async put(record: T) {
     try {
-      const res = await this.documentClient.put({
+      const res = await this.tableClass.metadata.connection.documentClient.put({
         TableName: this.tableClass.metadata.name,
         Item: Codec.serialize(this.tableClass, record),
       }).promise();
@@ -32,7 +29,7 @@ export class Writer<T extends Table> {
 
   async batchPut(records: T[]) {
     return await batchWrite(
-      this.documentClient,
+      this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
       records.map(record => {
         return {
@@ -45,7 +42,7 @@ export class Writer<T extends Table> {
   }
 
   async delete(record: T) {
-    await this.documentClient.delete({
+    await this.tableClass.metadata.connection.documentClient.delete({
       TableName: this.tableClass.metadata.name,
       Key: KeyFromRecord(record, this.tableClass.metadata.primaryKey),
     }).promise();

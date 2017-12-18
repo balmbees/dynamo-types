@@ -15,8 +15,7 @@ const RANGE_KEY_REF = "#rk";
 export class LocalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType> {
   constructor(
     readonly tableClass: ITable<T>,
-    readonly metadata: Metadata.Indexes.LocalSecondaryIndexMetadata,
-    readonly documentClient: DynamoDB.DocumentClient
+    readonly metadata: Metadata.Indexes.LocalSecondaryIndexMetadata
   ) {}
 
   async query(options: {
@@ -56,7 +55,7 @@ export class LocalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType> {
       Object.assign(params.ExpressionAttributeValues, rangeKeyOptions.expressionAttributeValues);
     }
 
-    const result = await this.documentClient.query(params).promise();
+    const result = await this.tableClass.metadata.connection.documentClient.query(params).promise();
 
     return {
       records: (result.Items || []).map(item => {

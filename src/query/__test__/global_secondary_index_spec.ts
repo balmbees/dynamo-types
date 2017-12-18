@@ -9,7 +9,6 @@ import { FullPrimaryKey } from '../full_primary_key';
 import * as Decorator from '../../decorator';
 
 import * as Query from '../index';
-import Config from '../../config';
 
 @Decorator.Table({ name: "prod-Card" })
 class Card extends Table {
@@ -43,21 +42,21 @@ describe("HashGlobalSecondaryIndex", () => {
 
   describe("#query", () => {
     it("should find items", async () => {
-      await Config.documentClient.put({
+      await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abc",
         }
       }).promise();
-      await Config.documentClient.put({
+      await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 11,
           title: "abd",
         }
       }).promise();
-      await Config.documentClient.put({
+      await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 12,
@@ -85,28 +84,28 @@ describe("FullGlobalSecondaryIndex", () => {
 
   describe("#query", () => {
     it("should find items", async () => {
-      await Config.documentClient.put({
+      await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abc",
         }
       }).promise();
-      await Config.documentClient.put({
+      await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 11,
           title: "abd",
         }
       }).promise();
-      await Config.documentClient.put({
+      await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 12,
           title: "abd",
         }
       }).promise();
-      await Config.documentClient.put({
+      await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 13,

@@ -16,12 +16,11 @@ const RANGE_KEY_REF = "#rk";
 export class HashPrimaryKey<T extends Table, HashKeyType> {
   constructor(
     readonly tableClass: ITable<T>,
-    readonly metadata: Metadata.Indexes.HashPrimaryKeyMetadata,
-    readonly documentClient: DynamoDB.DocumentClient
+    readonly metadata: Metadata.Indexes.HashPrimaryKeyMetadata
   ) {}
 
   async delete(hashKey: HashKeyType) {
-    const res = await this.documentClient.delete({
+    const res = await this.tableClass.metadata.connection.documentClient.delete({
       TableName: this.tableClass.metadata.name,
       Key: {
         [this.metadata.hash.name]: hashKey,
@@ -31,7 +30,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
 
   async get(hashKey: HashKeyType, options: { consistent: boolean } = { consistent: false }): Promise<T | null> {
     const dynamoRecord =
-      await this.documentClient.get({
+      await this.tableClass.metadata.connection.documentClient.get({
         TableName: this.tableClass.metadata.name,
         Key: {
           [this.metadata.hash.name]: hashKey,
@@ -61,7 +60,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
       Segment: options.segment,
     };
 
-    const result = await this.documentClient.scan(params).promise();
+    const result = await this.tableClass.metadata.connection.documentClient.scan(params).promise();
 
     return {
       records: (result.Items || []).map(item => {
@@ -76,7 +75,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
 
   async batchGet(keys: Array<HashKeyType>) {
     const res = await batchGet(
-      this.documentClient,
+      this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
       keys.map((key) => {
         return {
@@ -94,7 +93,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
 
   async batchDelete(keys: Array<[HashKeyType]>) {
     return await batchWrite(
-      this.documentClient,
+      this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
       keys.map(key => {
         return {
@@ -133,7 +132,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     });
 
     const dynamoRecord =
-      await this.documentClient.update({
+      await this.tableClass.metadata.connection.documentClient.update({
         TableName: this.tableClass.metadata.name,
         Key: {
           [this.metadata.hash.name]: hashKey,
