@@ -7,7 +7,7 @@ Typescript ORM of DynamoDB, written from scrach to fully support the DynamoDB
 ## Features
 1. DynamoDB record -> TS Class object with typing
 2. CreateTable / DropTable
-3. PrimaryKey 
+3. PrimaryKey
    - FullPrimaryKey (Hash, Range)
    - HashPrimaryKey (Hash)
 4. Attribute
@@ -29,7 +29,7 @@ Also, dynamo-types let you overcome several limits that dynamoDB (or it's sdk ha
 
     @Decorator.Attribute()
     public title: string;
-    
+
     @Decorator.Attribute({ timeToLive: true })
     public expiresAt: number;
 
@@ -51,7 +51,7 @@ Also, dynamo-types let you overcome several limits that dynamoDB (or it's sdk ha
   const card = new Card();
   card.id = 100;
   card.title = "Title";
-  // 
+  //
   await Card.writer.put(card);
   // OR just
   await card.save();
@@ -111,3 +111,29 @@ export class CardStat extends Table {
   public shares: number = 0;
 }
 ```
+
+### Connection
+DynamoDB support 2 different kind of connection. plain connection DynamoDB through HTTP, or through DAX
+dynamo-types support this by let you create seperated connection per each table.
+
+```
+@Decorator.Table({ name: "prod-Card1", connection: new DAXConnection({ endpoints: ["dax-domain:8892"] }) })
+class Card extends Table {
+  @AttributeDecorator()
+  public id: number;
+
+  @AttributeDecorator()
+  public title: string;
+
+  @AttributeDecorator({ name: "complicated_field"})
+  public complicatedField: string;
+
+  @FullPrimaryKeyDecorator('id', 'title')
+  static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
+
+  @WriterDecorator()
+  static readonly writer: Query.Writer<Card>;
+}
+```
+
+Than any query that sent to Card table would be through DAXConnection
