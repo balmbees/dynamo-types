@@ -1,11 +1,14 @@
 import * as Metadata from '../metadata';
 import { ITable, Table as TableClass } from '../table';
 import * as Query from '../query';
+
 import Config from '../config';
+import { Connection } from '../connections';
 
 // Table Decorator
-export function Table(options: { name?: string } = {}) {
+export function Table(options: { name?: string, connection?: Connection } = {}) {
   return (target: ITable<any>) => {
+    target.metadata.connection = options.connection || Config.defaultConnection;
     target.metadata.name = options.name || target.name;
 
     // Table Decorator Executed at last,
@@ -47,7 +50,7 @@ function defineGlobalSecondaryIndexes(table: ITable<any>) {
         table,
         metadata.propertyName,
         {
-          value: new Query.HashGlobalSecondaryIndex(table, metadata, Config.documentClient),
+          value: new Query.HashGlobalSecondaryIndex(table, metadata),
           writable: false,
         }
       );
@@ -56,7 +59,7 @@ function defineGlobalSecondaryIndexes(table: ITable<any>) {
         table,
         metadata.propertyName,
         {
-          value: new Query.FullGlobalSecondaryIndex(table, metadata, Config.documentClient),
+          value: new Query.FullGlobalSecondaryIndex(table, metadata),
           writable: false,
         }
       );
@@ -70,7 +73,7 @@ function defineLocalSecondaryIndexes(table: ITable<any>) {
       table,
       metadata.propertyName,
       {
-        value: new Query.LocalSecondaryIndex(table, metadata, Config.documentClient),
+        value: new Query.LocalSecondaryIndex(table, metadata),
         writable: false,
       }
     );
@@ -85,7 +88,7 @@ function definePrimaryKeyProperty(table: ITable<any>) {
         table,
         pkMetdata.name,
         {
-          value: new Query.FullPrimaryKey(table, pkMetdata, Config.documentClient),
+          value: new Query.FullPrimaryKey(table, pkMetdata),
           writable: false,
         }
       );
@@ -94,7 +97,7 @@ function definePrimaryKeyProperty(table: ITable<any>) {
         table,
         pkMetdata.name,
         {
-          value: new Query.HashPrimaryKey(table, pkMetdata, Config.documentClient),
+          value: new Query.HashPrimaryKey(table, pkMetdata),
           writable: false,
         }
       );

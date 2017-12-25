@@ -17,8 +17,6 @@ import {
 } from '../../decorator';
 
 import * as Query from '../index';
-import Config from '../../config';
-
 
 describe("HashPrimaryKey", () => {
   @TableDecorator({ name: "prod-card3" })
@@ -43,8 +41,7 @@ describe("HashPrimaryKey", () => {
 
     primaryKey = new HashPrimaryKey<Card, number>(
       Card,
-      Card.metadata.primaryKey as Metadata.Indexes.HashPrimaryKeyMetadata,
-      Config.documentClient
+      Card.metadata.primaryKey as Metadata.Indexes.HashPrimaryKeyMetadata
     );
   });
 
@@ -54,7 +51,7 @@ describe("HashPrimaryKey", () => {
 
   describe("#delete", async () => {
     it("should delete item if exist", async () => {
-      await Config.documentClient.put({
+      await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 10,

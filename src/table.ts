@@ -3,7 +3,6 @@ import * as Metadata from "./metadata";
 import * as Query from "./query";
 
 import * as _ from "lodash";
-import Config from './config';
 
 export class Table {
   // This will be setted by Decorator
@@ -19,10 +18,10 @@ export class Table {
 
   // Table Operations
   static async createTable() {
-    await Query.TableOperations.createTable(this.metadata, Config.client);
+    await Query.TableOperations.createTable(this.metadata);
   }
   static async dropTable() {
-    await Query.TableOperations.dropTable(this.metadata, Config.client);
+    await Query.TableOperations.dropTable(this.metadata);
   }
 
   // raw storage for all attributes this record (instance) has
@@ -45,10 +44,7 @@ export class Table {
   private __writer: Query.Writer<Table>;
   private get writer() {
     if (!this.__writer) {
-      this.__writer = new Query.Writer(
-        (this.constructor as ITable<Table>),
-        Config.documentClient
-      );
+      this.__writer = new Query.Writer(this.constructor as ITable<Table>);
     }
     return this.__writer;
   }

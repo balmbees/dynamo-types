@@ -18,12 +18,11 @@ const RANGE_KEY_REF = "#rk";
 export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
   constructor(
     readonly tableClass: ITable<T>,
-    readonly metadata: Metadata.Indexes.FullPrimaryKeyMetadata,
-    readonly documentClient: DynamoDB.DocumentClient
+    readonly metadata: Metadata.Indexes.FullPrimaryKeyMetadata
   ) {}
 
   async delete(hashKey: HashKeyType, sortKey: RangeKeyType) {
-    const res = await this.documentClient.delete({
+    const res = await this.tableClass.metadata.connection.documentClient.delete({
       TableName: this.tableClass.metadata.name,
       // ReturnValues: "ALL_OLD",
       Key: {
@@ -40,7 +39,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
    */
   async get(hashKey: HashKeyType, sortKey: RangeKeyType, options: { consistent: boolean } = { consistent: false } ): Promise<T | null> {
     const dynamoRecord =
-      await this.documentClient.get({
+      await this.tableClass.metadata.connection.documentClient.get({
         TableName: this.tableClass.metadata.name,
         Key: {
           [this.metadata.hash.name]: hashKey,
@@ -57,7 +56,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
 
   async batchGet(keys: Array<[HashKeyType, RangeKeyType]>) {
     const res = await batchGet(
-      this.documentClient,
+      this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
       keys.map((key) => {
         return {
@@ -76,7 +75,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
 
   async batchDelete(keys: Array<[HashKeyType, RangeKeyType]>) {
     return await batchWrite(
-      this.documentClient,
+      this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
       keys.map(key => {
         return {
@@ -127,7 +126,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
       Object.assign(params.ExpressionAttributeValues, rangeKeyOptions.expressionAttributeValues);
     }
 
-    const result = await this.documentClient.query(params).promise();
+    const result = await this.tableClass.metadata.connection.documentClient.query(params).promise();
 
     return {
       records: (result.Items || []).map(item => {
@@ -166,7 +165,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     });
 
     const dynamoRecord =
-      await this.documentClient.update({
+      await this.tableClass.metadata.connection.documentClient.update({
         TableName: this.tableClass.metadata.name,
         Key: {
           [this.metadata.hash.name]: hashKey,

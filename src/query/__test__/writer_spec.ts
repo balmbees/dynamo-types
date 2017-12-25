@@ -13,8 +13,6 @@ import { Writer } from '../writer';
 
 import { Table } from '../../table';
 
-import Config from '../../config';
-
 @TableDecorator({ name: "prod-Card4" })
 class Card extends Table {
   @AttributeDecorator()
@@ -29,10 +27,10 @@ class Card extends Table {
 
 describe("Writer", () => {
   beforeEach(async () => {
-    await TableOperations.createTable(Card.metadata, Config.client);
+    await TableOperations.createTable(Card.metadata);
   });
   afterEach(async () => {
-    await TableOperations.dropTable(Card.metadata, Config.client);
+    await TableOperations.dropTable(Card.metadata);
   });
 
   describe("put", () => {
@@ -41,7 +39,7 @@ describe("Writer", () => {
       card.id = 100;
       card.title = "100";
 
-      const writer = new Writer(Card, Config.documentClient);
+      const writer = new Writer(Card);
       await writer.put(card);
 
       const reloadedCard = await Card.primaryKey.get(100, "100");

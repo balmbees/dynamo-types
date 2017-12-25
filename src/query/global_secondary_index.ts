@@ -15,8 +15,7 @@ const RANGE_KEY_REF = "#rk";
 export class FullGlobalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType> {
   constructor(
     readonly tableClass: ITable<T>,
-    readonly metadata: Metadata.Indexes.FullGlobalSecondaryIndexMetadata,
-    readonly documentClient: DynamoDB.DocumentClient
+    readonly metadata: Metadata.Indexes.FullGlobalSecondaryIndexMetadata
   ) {}
 
   async query(options: {
@@ -56,7 +55,7 @@ export class FullGlobalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType
       Object.assign(params.ExpressionAttributeValues, rangeKeyOptions.expressionAttributeValues);
     }
 
-    const result = await this.documentClient.query(params).promise();
+    const result = await this.tableClass.metadata.connection.documentClient.query(params).promise();
 
     return {
       records: (result.Items || []).map(item => {
@@ -73,8 +72,7 @@ export class FullGlobalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType
 export class HashGlobalSecondaryIndex<T extends Table, HashKeyType> {
   constructor(
     readonly tableClass: ITable<T>,
-    readonly metadata: Metadata.Indexes.HashGlobalSecondaryIndexMetadata,
-    readonly documentClient: DynamoDB.DocumentClient
+    readonly metadata: Metadata.Indexes.HashGlobalSecondaryIndexMetadata
   ) {}
 
   async query(hash: HashKeyType, options: { limit?: number, consistent?: boolean } = {}) {
@@ -93,7 +91,7 @@ export class HashGlobalSecondaryIndex<T extends Table, HashKeyType> {
       ConsistentRead: options.consistent,
     };
 
-    const result = await this.documentClient.query(params).promise();
+    const result = await this.tableClass.metadata.connection.documentClient.query(params).promise();
 
     return {
       records: (result.Items || []).map(item => {

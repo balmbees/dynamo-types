@@ -1,6 +1,8 @@
 import * as Attribute from './attribute';
 import * as Indexes from './indexes';
 
+import * as Connection from "../connections";
+
 // Table consists of
 // - Attributes
 // - Indexes
@@ -8,6 +10,7 @@ import * as Indexes from './indexes';
 export interface Metadata {
   name: string; // name of the table on DynamoDB
   attributes: Attribute.Metadata[]; // List of attributes this table has
+  connection: Connection.Connection; // DynamoDB Database Connection
   globalSecondaryIndexes: Array<
     Indexes.FullGlobalSecondaryIndexMetadata
     | Indexes.HashGlobalSecondaryIndexMetadata
@@ -34,6 +37,8 @@ export function validateMetadata(metadata: Metadata) {
     throw new Error("Name must be proviede for Table");
   if (!metadata.primaryKey)
     throw new Error("Table must have PrimaryKey");
+  if (!metadata.connection)
+    throw new Error("Table must have DynamoDB Connection");
 
   // TTL
   const ttlAttributes = metadata.attributes.filter(attribute => attribute.timeToLive);

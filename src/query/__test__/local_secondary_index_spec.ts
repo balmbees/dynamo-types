@@ -9,7 +9,6 @@ import { FullPrimaryKey } from '../full_primary_key';
 import * as Decorator from '../../decorator';
 
 import * as Query from '../index';
-import Config from '../../config';
 
 @Decorator.Table({ name: "prod-Card-3" })
 class Card extends Table {
