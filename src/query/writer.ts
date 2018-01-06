@@ -22,7 +22,7 @@ export class Writer<T extends Table> {
       record.setAttributes(res.Attributes || {});
       return record;
     } catch (e) {
-      console.log(`Dynamo-Types Put - ${JSON.stringify(record, null, 2)}`);
+      console.log(`Dynamo-Types Put - ${JSON.stringify(record.serialize(), null, 2)}`);
       throw e;
     }
   }
