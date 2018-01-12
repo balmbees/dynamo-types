@@ -1,4 +1,4 @@
-[![Travis Build Status](https://travis-ci.org/breath103/dynamo-typeorm.svg?branch=master)](https://travis-ci.org/breath103/dynamo-typeorm)
+[![Travis Build Status](https://travis-ci.org/balmbees/dynamo-typeorm.svg?branch=master)](https://travis-ci.org/breath103/dynamo-typeorm)
 [![npm version](https://badge.fury.io/js/dynamo-types.svg)](https://badge.fury.io/js/dynamo-types)
 
 # DynamoTypes
@@ -85,7 +85,7 @@ Also, dynamo-types let you overcome several limits that dynamoDB (or it's sdk ha
 ```
 
 
-```
+```typescript
 import {
   Config,
   Decorator,
@@ -116,7 +116,7 @@ export class CardStat extends Table {
 DynamoDB support 2 different kind of connection. plain connection DynamoDB through HTTP, or through DAX
 dynamo-types support this by let you create seperated connection per each table.
 
-```
+```typescript
 @Decorator.Table({ name: "prod-Card1", connection: new DAXConnection({ endpoints: ["dax-domain:8892"] }) })
 class Card extends Table {
   @AttributeDecorator()
