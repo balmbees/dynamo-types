@@ -108,14 +108,26 @@ describe("FullPrimaryKey", () => {
         }
       }).promise();
 
-      const items = (await primaryKey.batchGet([
+      const items1 = (await primaryKey.batchGet([
         [10, "abc"],
         [11, "abc"]
       ])).records;
-      expect(items.length).to.eq(2);
+      expect(items1.length).to.eq(2);
+      expect(items1[0].id).to.eq(10);
+      expect(items1[1].id).to.eq(11);
 
-      expect(items[0].id).to.eq(10);
-      expect(items[1].id).to.eq(11);
+
+      const items2 = (await primaryKey.batchGetFull([
+        [10, "abc"],
+        [10000, "asdgasdgs"],
+        [11, "abc"],
+      ])).records;
+      expect(items2.length).to.eq(3);
+      expect(items2[0]!.id).to.eq(10);
+      expect(items2[0]!.title).to.eq("abc");
+      expect(items2[1]).to.eq(undefined);
+      expect(items2[2]!.id).to.eq(11);
+      expect(items2[2]!.title).to.eq("abc");
     });
   });
 

@@ -5,7 +5,7 @@ import * as Metadata from '../metadata';
 import * as Codec from '../codec';
 
 import { batchWrite } from "./batch_write";
-import { batchGet } from "./batch_get";
+import { batchGetFull, batchGetTrim } from "./batch_get";
 import * as Scan from "./scan";
 
 const HASH_KEY_REF = "#hk";
@@ -74,7 +74,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
   }
 
   async batchGet(keys: Array<HashKeyType>) {
-    const res = await batchGet(
+    const res = await batchGetTrim(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
       keys.map((key) => {
@@ -87,6 +87,24 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     return {
       records: res.map(item => {
         return Codec.deserialize(this.tableClass, item);
+      })
+    };
+  }
+
+  async batchGetFull(keys: Array<HashKeyType>) {
+    const res = await batchGetFull(
+      this.tableClass.metadata.connection.documentClient,
+      this.tableClass.metadata.name,
+      keys.map((key) => {
+        return {
+          [this.metadata.hash.name]: key,
+        }
+      })
+    );
+
+    return {
+      records: res.map(item => {
+        return item ? Codec.deserialize(this.tableClass, item) : undefined;
       })
     };
   }

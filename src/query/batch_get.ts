@@ -4,15 +4,20 @@ import * as _ from "lodash";
 // this is limit of dynamoDB
 const MAX_ITEMS = 100;
 
-// 1. BatchGet keeps the order
-export async function batchGet(
+/**
+ *
+ * @param documentClient
+ * @param tableName
+ * @param keys
+ * @param trimMissing - when given key doesn't have matching record, return "undefined" for index? or just remove itdefault is true
+ */
+export async function __batchGet(
   documentClient: DynamoDB.DocumentClient,
   tableName: string,
   keys: DynamoDB.DocumentClient.KeyList,
 ) {
-
   try {
-    const res = await Promise.all(
+    return await Promise.all(
       _.chunk(keys, MAX_ITEMS)
         .map(async keysChunk => {
           const res =
@@ -24,30 +29,51 @@ export async function batchGet(
               },
             }).promise();
 
-          // Batch get doesn't sort the output follow to input.
-          return _.sortBy(
-            res.Responses![tableName]
-            , (record, index) => {
-              const keyIndex = keysChunk.findIndex((keys) => {
-                for (let keyName in keys) {
-                  if (record[keyName] !== keys[keyName]) {
-                    return false;
-                  }
-                }
-                return true;
-              });
-              if (keyIndex < 0) {
-                // Key exists in Output, but not in input. SOMETHING IS WEIRD!
-                throw new Error("BatchGet : Key exists in Output, but not in input. SOMETHING IS WEIRD!");
-              }
-              return keyIndex;
-            });
-        })
-    );
+          const records = res.Responses![tableName]!;
 
-    return _.concat([], ...res);
+          return keysChunk.map(key => {
+            return records.find((record) => {
+              for (const keyName in key) {
+                if (record[keyName] !== key[keyName]) {
+                  return false;
+                }
+              }
+              return true;
+            });
+          });
+        })
+    ).then((chunks) => {
+      return _.flatten(chunks);
+    });
   } catch (e) {
     console.log(`Dynamo-Types batchGet - ${JSON.stringify(keys, null, 2)}`);
     throw e;
   }
+}
+
+
+export async function batchGetFull(
+  documentClient: DynamoDB.DocumentClient,
+  tableName: string,
+  keys: DynamoDB.DocumentClient.KeyList,
+) {
+  return await __batchGet(documentClient, tableName, keys);
+}
+
+export async function batchGetTrim(
+  documentClient: DynamoDB.DocumentClient,
+  tableName: string,
+  keys: DynamoDB.DocumentClient.KeyList,
+) {
+  return removeFalsyFilter(await __batchGet(documentClient, tableName, keys));
+}
+
+function removeFalsyFilter<T>(array: Array<T | undefined>) {
+  const res: T[] = [];
+  array.forEach(item => {
+    if (!!item) {
+      res.push(item);
+    }
+  });
+  return res;
 }
