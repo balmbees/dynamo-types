@@ -8,7 +8,7 @@ import * as Codec from '../codec';
 import * as Query from './query';
 
 import { batchWrite } from "./batch_write";
-import { batchGet } from "./batch_get";
+import { batchGetFull, batchGetTrim } from "./batch_get";
 
 const HASH_KEY_REF = "#hk";
 const HASH_VALUE_REF = ":hkv";
@@ -55,7 +55,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
   }
 
   async batchGet(keys: Array<[HashKeyType, RangeKeyType]>) {
-    const res = await batchGet(
+    const res = await batchGetTrim(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
       keys.map((key) => {
@@ -69,6 +69,25 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     return {
       records: res.map(item => {
         return Codec.deserialize(this.tableClass, item);
+      })
+    };
+  }
+
+  async batchGetFull(keys: Array<[HashKeyType, RangeKeyType]>) {
+    const res = await batchGetFull(
+      this.tableClass.metadata.connection.documentClient,
+      this.tableClass.metadata.name,
+      keys.map((key) => {
+        return {
+          [this.metadata.hash.name]: key[0],
+          [this.metadata.range.name]: key[1],
+        }
+      })
+    );
+
+    return {
+      records: res.map(item => {
+        return item ? Codec.deserialize(this.tableClass, item) : undefined;
       })
     };
   }

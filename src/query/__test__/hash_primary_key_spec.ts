@@ -108,10 +108,10 @@ describe("HashPrimaryKey", () => {
         await createCard(),
       ];
 
-      const result = (await primaryKey.batchGet(cards.map(c => c.id))).records;
+      const result1 = (await primaryKey.batchGet(cards.map(c => c.id))).records;
 
       // it should keep the order
-      expect(result.map(c => c.id)).to.deep.eq(cards.map(c => c.id));
+      expect(result1.map(c => c.id)).to.deep.eq(cards.map(c => c.id));
     });
   });
 });
