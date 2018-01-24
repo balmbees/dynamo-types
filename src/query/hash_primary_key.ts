@@ -109,7 +109,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     };
   }
 
-  async batchDelete(keys: Array<[HashKeyType]>) {
+  async batchDelete(keys: Array<HashKeyType>) {
     return await batchWrite(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
@@ -117,7 +117,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
         return {
           DeleteRequest: {
             Key: {
-              [this.metadata.hash.name]: key[0],
+              [this.metadata.hash.name]: key,
             },
           },
         };
