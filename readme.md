@@ -2,7 +2,7 @@
 [![npm version](https://badge.fury.io/js/dynamo-types.svg)](https://badge.fury.io/js/dynamo-types)
 
 # DynamoTypes
-Typescript ORM of DynamoDB, written from scrach to fully support the DynamoDB
+Typescript ORM of DynamoDB, written from scratch to fully support DynamoDB.
 
 ## Features
 1. DynamoDB record -> TS Class object with typing
@@ -14,11 +14,12 @@ Typescript ORM of DynamoDB, written from scrach to fully support the DynamoDB
    - Type Support (Number / String / Boolean / Array / Object / Buffer)
    - TimeToLive
 
-Also, dynamo-types let you overcome several limits that dynamoDB (or it's sdk has)
-1. BatchWrite (batchDelete / batchPut) has limit of maximum 25 items per request.
-   - dynamo-types automatically split given items to chunk of 25 and sends requests
-2. BatchGet has limit of maximum 100 items per requests
-   - dynamo-types automatically split given keys to chunk of 25 and sends requests in parallel
+Also, dynamo-types let you overcome several limits that dynamoDB or its sdk has.
+
+1. BatchWrite (batchDelete / batchPut) has a limit of a maximum of 25 items per request.
+   - dynamo-typeorm automatically splits given items to chunks of 25 and sends requests in parallel
+2. BatchGet has a limit of a maximum of 100 items per requests
+   - dynamo-typeorm automatically splits given keys to chunks of 25 and sends requests in parallel
 
 ## Usage
 ```typescript
@@ -113,8 +114,8 @@ export class CardStat extends Table {
 ```
 
 ### Connection
-DynamoDB support 2 different kind of connection. plain connection DynamoDB through HTTP, or through DAX
-dynamo-types support this by let you create seperated connection per each table.
+DynamoDB supports 2 different kinds of connections. Plain connections to DynamoDB through HTTP, or through DAX.
+dynamo-typeorm supports this by letting you create a separate connection for each table.
 
 ```typescript
 @Decorator.Table({ name: "prod-Card1", connection: new DAXConnection({ endpoints: ["dax-domain:8892"] }) })
@@ -136,4 +137,4 @@ class Card extends Table {
 }
 ```
 
-Than any query that sent to Card table would be through DAXConnection
+Then any query that is sent to the Card table will be sent through DAXConnection.
