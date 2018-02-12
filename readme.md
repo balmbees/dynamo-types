@@ -13,6 +13,9 @@ Typescript ORM of DynamoDB, written from scratch to fully support DynamoDB.
 4. Attribute
    - Type Support (Number / String / Boolean / Array / Object / Buffer)
    - TimeToLive
+5. DAX Support
+   - You can specify this by setting connection of table. 
+   - WARNING: aws-dax-sdk has a lot of problems including critical performance issue. 
 
 Also, dynamo-types let you overcome several limits that dynamoDB or its sdk has.
 
@@ -20,6 +23,16 @@ Also, dynamo-types let you overcome several limits that dynamoDB or its sdk has.
    - dynamo-typeorm automatically splits given items to chunks of 25 and sends requests in parallel
 2. BatchGet has a limit of a maximum of 100 items per requests
    - dynamo-typeorm automatically splits given keys to chunks of 25 and sends requests in parallel
+3. BatchGet doesn't keep the order of items as it is in input keys,
+   - dynamo-typeorm sort those return items follows to input keys
+4. BatchGet doesn't handle "missing items".
+   - dynamo-typeorm has "BatchGet" / "BatchGetFull" 
+     - BatchGet  
+        order items follow to keys, missing items are just missing. return type Promise<Array<Item>>  
+        so keys.legnth !== items.keys in this case  
+     - BatchGetFull   
+        order items follow to keys, fill missing items with "null". return type Promise<Array<Item | null>>  
+        so keys.length === items.keys always true  
 
 ## Usage
 ```typescript
