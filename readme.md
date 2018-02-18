@@ -2,29 +2,42 @@
 [![npm version](https://badge.fury.io/js/dynamo-types.svg)](https://badge.fury.io/js/dynamo-types)
 
 # DynamoTypes
-Typescript ORM of DynamoDB, written from scratch to fully support DynamoDB.
+Typescript ORM of DynamoDB, written from scratch to fully support DynamoDB. Powering (Vingle)[https://www.vingle.net]
 
 ## Features
-1. DynamoDB record -> TS Class object with typing
-2. CreateTable / DropTable
+1. Serialize / Deserialize DynamoDB record -> TS class object based on annotations.
+2. Table Configurations
+   - CreateTable
+     - Create secondary indexes (Both local / global)
+     - Configure TTL
+   - DropTable
 3. PrimaryKey
    - FullPrimaryKey (Hash, Range)
    - HashPrimaryKey (Hash)
-4. Attribute
+4. Indexes
+   - Local, both hash and range key
+   - Global, both hash and range key
+5. Attribute
    - Type Support (Number / String / Boolean / Array / Object / Buffer)
    - TimeToLive
-5. DAX Support
-   - You can specify this by setting connection of table. 
-   - WARNING: aws-dax-sdk has a lot of problems including critical performance issue. 
+6. DAX Support
+   - You can specify this by setting the connection of table. 
+   - [WARNING: aws-dax-sdk has a huge critical performance issue which not been fixed yet](https://forums.aws.amazon.com/thread.jspa?messageID=831160&#831160). Highly recommend not to use it for now.
+7. Optimized aws-sdk usage
+   - aws-sdk has a serious problem of not reusing HTTP connection towards DynamoDB by default. check [this issue](https://github.com/aws/aws-sdk-js/issues/900) this could cause unbearable latency sometimes with showing > 100ms. this is more of an issue of NodeJS HTTP module but nevertheless, this is optimized as a default. [Code](https://github.com/balmbees/dynamo-typeorm/blob/master/src/connections/dynamodb_connection.ts#L37)
+8. AWS X-Ray support
+   - X-Ray is serverless distributed tracing service. In order to log DynamoDB transaction into it, you also need to some sort of risk monkey-patching. Here you can turn it on by setting [`process.env.ENABLE_XRAY = "true"`](https://github.com/balmbees/dynamo-typeorm/blob/e0391c1c171638d06f9262446d8cbcb14a573cc8/src/config.ts#L9)
+9. Testing
+   - You can change the endpoint of DynamoDB by setting the environment variable or setting new connection, So you can install [local-dynamo](https://www.npmjs.com/package/local-dynamo) locally at setup endpoint to local. refer package.json for the detailed how-to
 
-Also, dynamo-types let you overcome several limits that dynamoDB or its sdk has.
+Also, dynamo-types let you overcome several limits that DynamoDB or the aws-sdk has.
 
 1. BatchWrite (batchDelete / batchPut) has a limit of a maximum of 25 items per request.
-   - dynamo-typeorm automatically splits given items to chunks of 25 and sends requests in parallel
+   - dynamo-typeorm automatically splits given items into chunks of 25 and sends requests in parallel
 2. BatchGet has a limit of a maximum of 100 items per requests
    - dynamo-typeorm automatically splits given keys to chunks of 25 and sends requests in parallel
 3. BatchGet doesn't keep the order of items as it is in input keys,
-   - dynamo-typeorm sort those return items follows to input keys
+   - dynamo-typeorm sort return items based on input keys
 4. BatchGet doesn't handle "missing items".
    - dynamo-typeorm has "BatchGet" / "BatchGetFull" 
      - BatchGet  
@@ -33,6 +46,8 @@ Also, dynamo-types let you overcome several limits that dynamoDB or its sdk has.
      - BatchGetFull   
         order items follow to keys, fill missing items with "null". return type Promise<Array<Item | null>>  
         so keys.length === items.keys always true  
+
+And most importantly, all of those queries regardless of whether it's from index or primary key, strongly typed. I mean what's the point of using typescript if not anyway?
 
 ## Usage
 ```typescript
@@ -151,3 +166,5 @@ class Card extends Table {
 ```
 
 Then any query that is sent to the Card table will be sent through DAXConnection.
+
+If you don't specify any connection, it automatically uses [default connection](https://github.com/balmbees/dynamo-typeorm/blob/e0391c1c171638d06f9262446d8cbcb14a573cc8/src/config.ts#L5), which is [DynamoDBConnection](https://github.com/balmbees/dynamo-typeorm/blob/e0391c1c171638d06f9262446d8cbcb14a573cc8/src/connections/dynamodb_connection.ts).
