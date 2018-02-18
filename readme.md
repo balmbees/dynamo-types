@@ -2,7 +2,7 @@
 [![npm version](https://badge.fury.io/js/dynamo-types.svg)](https://badge.fury.io/js/dynamo-types)
 
 # DynamoTypes
-Typescript ORM of DynamoDB, written from scratch to fully support DynamoDB. Powering (Vingle)[https://www.vingle.net]
+Typescript ORM of DynamoDB, written from scratch to fully support DynamoDB. Powering [Vingle](https://www.vingle.net)
 
 ## Features
 1. Serialize / Deserialize DynamoDB record -> TS class object based on annotations.
