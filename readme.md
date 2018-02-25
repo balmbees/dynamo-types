@@ -35,7 +35,7 @@ Also, dynamo-types let you overcome several limits that DynamoDB or the aws-sdk 
 1. BatchWrite (batchDelete / batchPut) has a limit of a maximum of 25 items per request.
    - dynamo-typeorm automatically splits given items into chunks of 25 and sends requests in parallel
 2. BatchGet has a limit of a maximum of 100 items per requests
-   - dynamo-typeorm automatically splits given keys to chunks of 25 and sends requests in parallel
+   - dynamo-typeorm automatically splits given keys to chunks of 100 and sends requests in parallel
 3. BatchGet doesn't keep the order of items as it is in input keys,
    - dynamo-typeorm sort return items based on input keys
 4. BatchGet doesn't handle "missing items".
