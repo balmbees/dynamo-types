@@ -102,7 +102,7 @@ And most importantly, all of those queries regardless of whether it's from index
   ])
 
   // Query
-  // Range key opreation is also stringly typed also
+  // Range key opreations are stringly typed. ([">=", T] | ["=", T] ...)
   await Card.primaryKey.query({
     hash: 100,
     range: [">=", "Title"]
