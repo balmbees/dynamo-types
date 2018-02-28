@@ -177,6 +177,40 @@ describe("FullPrimaryKey", () => {
     });
   });
 
+  describe("#scan", () => {
+    it("should find items", async () => {
+      await Card.metadata.connection.documentClient.put({
+        TableName: Card.metadata.name,
+        Item: {
+          id: 10,
+          title: "abc",
+        }
+      }).promise();
+      await Card.metadata.connection.documentClient.put({
+        TableName: Card.metadata.name,
+        Item: {
+          id: 10,
+          title: "abd",
+        }
+      }).promise();
+      await Card.metadata.connection.documentClient.put({
+        TableName: Card.metadata.name,
+        Item: {
+          id: 10,
+          title: "aba",
+        }
+      }).promise();
+
+      let res = await primaryKey.scan({
+        limit: 2
+      });
+
+      expect(res.records.length).to.eq(2);
+      // Ordered by range key since it's "scan"
+      expect(res.records[0].title).to.eq("aba");
+      expect(res.records[1].title).to.eq("abc");
+    });
+  });
   describe("#update", () => {
     it("should be able to update items", async () => {
       await primaryKey.update(10, "abc", { count: ["ADD", 1] });
