@@ -141,6 +141,20 @@ export class CardStat extends Table {
 }
 ```
 
+### TS Compiler Setting
+DynamoTypes utilize [reflect-metadata](https://github.com/rbuckton/reflect-metadata) to read metadata (usually type of variables) from Typescript code. to do so, you must enable those options.
+
+```
+{
+    "compilerOptions": {
+        // other options..
+        //
+        "experimentalDecorators": true, // required
+        "emitDecoratorMetadata": true // required
+    }
+}
+```
+
 ### Connection
 DynamoDB supports 2 different kinds of connections. Plain connections to DynamoDB through HTTP, or through DAX.
 dynamo-typeorm supports this by letting you create a separate connection for each table.
