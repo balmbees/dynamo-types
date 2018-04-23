@@ -22,7 +22,6 @@ Typescript ORM of DynamoDB, written from scratch to fully support DynamoDB. Powe
    - TimeToLive
 6. DAX Support
    - You can specify this by setting the connection of table. 
-   - [WARNING: aws-dax-sdk has a huge critical performance issue which not been fixed yet](https://forums.aws.amazon.com/thread.jspa?messageID=831160&#831160). Highly recommend not to use it for now.
 7. Optimized aws-sdk usage
    - aws-sdk has a serious problem of not reusing HTTP connection towards DynamoDB by default. check [this issue](https://github.com/aws/aws-sdk-js/issues/900) this could cause unbearable latency sometimes with showing > 100ms. this is more of an issue of NodeJS HTTP module but nevertheless, this is optimized as a default. [Code](https://github.com/balmbees/dynamo-typeorm/blob/master/src/connections/dynamodb_connection.ts#L37)
 8. AWS X-Ray support
