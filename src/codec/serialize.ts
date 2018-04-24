@@ -11,7 +11,10 @@ export function serialize<T extends Table>(tableClass: ITable<T>, record: T): { 
   const res: { [key:string]: any } = {};
 
   tableClass.metadata.attributes.forEach(attributeMetadata => {
-    res[attributeMetadata.name] = record.getAttribute(attributeMetadata.name);
+    const attr = record.getAttribute(attributeMetadata.name);
+    if (attr !== undefined) {
+      res[attributeMetadata.name] = attr;
+    }
   });
 
   return res;
