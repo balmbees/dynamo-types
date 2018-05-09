@@ -6,8 +6,6 @@ import { DynamoDB } from "aws-sdk";
 import * as HTTP from "http";
 import * as HTTPS from "https";
 
-const AWSXRay = require("aws-xray-sdk-core");
-
 export class DynamoDBConnection implements Connection {
   constructor(options: {
     endpoint: string | undefined,
@@ -21,6 +19,9 @@ export class DynamoDBConnection implements Connection {
     };
 
     if (options.enableAWSXray) {
+      // Since "require" itself does something for this lib, such as logging
+      // importing this only when it's needed
+      const AWSXRay = require("aws-xray-sdk-core");
       const aws = AWSXRay.captureAWS(AWS);
       this.__client = new aws.DynamoDB(dynamoDBOptions);
       this.__documentClient = new aws.DynamoDB.DocumentClient({
