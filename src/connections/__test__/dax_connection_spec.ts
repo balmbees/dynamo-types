@@ -2,7 +2,7 @@ import * as chai from 'chai';
 const expect = chai.expect;
 
 import { DAXConnection } from "../dax_connection";
-const AmazonDaxClient = require('amazon-dax-client');
+const AmazonDaxClient = require('@vingle/amazon-dax-client');
 
 import * as AWS from "aws-sdk";
 
