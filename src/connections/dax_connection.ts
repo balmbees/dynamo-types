@@ -3,7 +3,7 @@ import { Connection } from "./connection";
 import * as AWS from "aws-sdk";
 import { DynamoDB } from "aws-sdk";
 
-const AmazonDaxClient = require('@vingle/amazon-dax-client');
+const AmazonDaxClient = require('amazon-dax-client');
 
 export class DAXConnection implements Connection {
   constructor(options: { endpoints: string[] }) {
