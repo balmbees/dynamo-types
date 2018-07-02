@@ -162,7 +162,6 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     limit?: number,
     totalSegments?: number,
     segment?: number,
-    FilterExpression?: string,
     exclusiveStartKey?: DynamoDB.DocumentClient.Key,
   }) {
     const params: DynamoDB.DocumentClient.ScanInput = {

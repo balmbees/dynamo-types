@@ -48,7 +48,6 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     limit?: number,
     totalSegments?: number,
     segment?: number,
-    FilterExpression?: string,
     exclusiveStartKey?: DynamoDB.DocumentClient.Key,
   }) {
     const params: DynamoDB.DocumentClient.ScanInput = {
