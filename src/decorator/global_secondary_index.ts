@@ -1,7 +1,8 @@
-import * as Metadata from '../metadata';
-import { Table, ITable } from '../table';
+import { ITable } from '../table';
 
-export function FullGlobalSecondaryIndex(hashKeyName: string, rangeKeyName: string, options: { name?: string; } = {}) {
+export function FullGlobalSecondaryIndex(
+  hashKeyName: string, rangeKeyName: string, options: { name?: string; } = {}
+) {
   return (tableClass: ITable<any>, propertyName: string) => {
     const hash = tableClass.metadata.attributes.find(attr => attr.name === hashKeyName);
     if (!hash)
@@ -21,7 +22,9 @@ export function FullGlobalSecondaryIndex(hashKeyName: string, rangeKeyName: stri
   }
 }
 
-export function HashGlobalSecondaryIndex(hashKeyName: string, options: { name?: string; } = {}) {
+export function HashGlobalSecondaryIndex(
+  hashKeyName: string, options: { name?: string; } = {}
+) {
   return (tableClass: ITable<any>, propertyName: string) => {
     const hash = tableClass.metadata.attributes.find(attr => attr.name === hashKeyName);
     if (!hash)

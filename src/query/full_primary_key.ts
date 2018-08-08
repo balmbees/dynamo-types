@@ -1,5 +1,4 @@
 import { DynamoDB } from 'aws-sdk';
-import * as _ from 'lodash';
 
 import { Table, ITable } from '../table';
 
@@ -22,7 +21,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
   ) {}
 
   async delete(hashKey: HashKeyType, sortKey: RangeKeyType) {
-    const res = await this.tableClass.metadata.connection.documentClient.delete({
+    await this.tableClass.metadata.connection.documentClient.delete({
       TableName: this.tableClass.metadata.name,
       // ReturnValues: "ALL_OLD",
       Key: {
@@ -67,9 +66,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     );
 
     return {
-      records: res.map(item => {
-        return Codec.deserialize(this.tableClass, item);
-      })
+      records: res.map(item => Codec.deserialize(this.tableClass, item))
     };
   }
 
@@ -77,12 +74,10 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     const res = await batchGetFull(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
-      keys.map((key) => {
-        return {
-          [this.metadata.hash.name]: key[0],
-          [this.metadata.range.name]: key[1],
-        }
-      })
+      keys.map((key) => ({
+        [this.metadata.hash.name]: key[0],
+        [this.metadata.range.name]: key[1],
+      }))
     );
 
     return {
@@ -96,16 +91,14 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     return await batchWrite(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
-      keys.map(key => {
-        return {
-          DeleteRequest: {
-            Key: {
-              [this.metadata.hash.name]: key[0],
-              [this.metadata.range.name]: key[1],
-            },
+      keys.map(key => ({
+        DeleteRequest: {
+          Key: {
+            [this.metadata.hash.name]: key[0],
+            [this.metadata.range.name]: key[1],
           },
-        };
-      })
+        },
+      }))
     );
   }
 
@@ -148,9 +141,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     const result = await this.tableClass.metadata.connection.documentClient.query(params).promise();
 
     return {
-      records: (result.Items || []).map(item => {
-        return Codec.deserialize(this.tableClass, item);
-      }),
+      records: (result.Items || []).map(item => Codec.deserialize(this.tableClass, item)),
       count: result.Count,
       scannedCount: result.ScannedCount,
       lastEvaluatedKey: result.LastEvaluatedKey,
@@ -176,9 +167,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     const result = await this.tableClass.metadata.connection.documentClient.scan(params).promise();
 
     return {
-      records: (result.Items || []).map(item => {
-        return Codec.deserialize(this.tableClass, item);
-      }),
+      records: (result.Items || []).map(item => Codec.deserialize(this.tableClass, item)),
       count: result.Count,
       scannedCount: result.ScannedCount,
       lastEvaluatedKey: result.LastEvaluatedKey,
@@ -208,14 +197,13 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
       }
     });
 
-    const dynamoRecord =
-      await this.tableClass.metadata.connection.documentClient.update({
-        TableName: this.tableClass.metadata.name,
-        Key: {
-          [this.metadata.hash.name]: hashKey,
-          [this.metadata.range.name]: sortKey,
-        },
-        AttributeUpdates: attributeUpdates,
-      }).promise();
+    await this.tableClass.metadata.connection.documentClient.update({
+      TableName: this.tableClass.metadata.name,
+      Key: {
+        [this.metadata.hash.name]: hashKey,
+        [this.metadata.range.name]: sortKey,
+      },
+      AttributeUpdates: attributeUpdates,
+    }).promise();
   }
 }

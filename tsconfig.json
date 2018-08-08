@@ -7,7 +7,8 @@
         "outDir": "dst",
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "noUnusedLocals": true
     },
     "exclude": [
         "**/__test__/"

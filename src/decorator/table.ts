@@ -81,26 +81,18 @@ function defineLocalSecondaryIndexes(table: ITable<any>) {
 }
 
 function definePrimaryKeyProperty(table: ITable<any>) {
-  if (table.metadata.primaryKey) {
-    const pkMetdata = table.metadata.primaryKey;
-    if (pkMetdata.type === "FULL") {
-      Object.defineProperty(
-        table,
-        pkMetdata.name,
-        {
-          value: new Query.FullPrimaryKey(table, pkMetdata),
-          writable: false,
-        }
-      );
-    } else {
-      Object.defineProperty(
-        table,
-        pkMetdata.name,
-        {
-          value: new Query.HashPrimaryKey(table, pkMetdata),
-          writable: false,
-        }
-      );
-    }
+  const pkMetdata = table.metadata.primaryKey;
+  if (pkMetdata.type === "FULL") {
+    const value = new Query.FullPrimaryKey(table, pkMetdata);
+    Object.defineProperty(
+      table, pkMetdata.name, { value, writable: false}
+    );
+    return value;
+  } else {
+    const value = new Query.HashPrimaryKey(table, pkMetdata);
+    Object.defineProperty(
+      table, pkMetdata.name, { value, writable: false }
+    );
+    return value;
   }
 }

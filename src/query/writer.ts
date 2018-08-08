@@ -1,8 +1,6 @@
 // Since in DyanmoDB writing is free from any kind index or what soever
 // whole "writing" operations are bundled into one here
-
 import { ITable, Table } from '../table';
-import { DynamoDB } from 'aws-sdk';
 
 import * as Codec from '../codec';
 import * as Metadata from '../metadata';

@@ -1,5 +1,4 @@
-import * as chai from 'chai';
-const expect = chai.expect;
+import { expect } from "chai";
 
 import { deserialize, unmarshal } from '../deserialize';
 import * as Metadata from '../../metadata';

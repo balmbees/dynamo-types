@@ -6,12 +6,6 @@ import * as Codec from '../codec';
 
 import { batchWrite } from "./batch_write";
 import { batchGetFull, batchGetTrim } from "./batch_get";
-import * as Scan from "./scan";
-
-const HASH_KEY_REF = "#hk";
-const HASH_VALUE_REF = ":hkv";
-
-const RANGE_KEY_REF = "#rk";
 
 export class HashPrimaryKey<T extends Table, HashKeyType> {
   constructor(
@@ -20,7 +14,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
   ) {}
 
   async delete(hashKey: HashKeyType) {
-    const res = await this.tableClass.metadata.connection.documentClient.delete({
+    await this.tableClass.metadata.connection.documentClient.delete({
       TableName: this.tableClass.metadata.name,
       Key: {
         [this.metadata.hash.name]: hashKey,
@@ -148,13 +142,12 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
       }
     });
 
-    const dynamoRecord =
-      await this.tableClass.metadata.connection.documentClient.update({
-        TableName: this.tableClass.metadata.name,
-        Key: {
-          [this.metadata.hash.name]: hashKey,
-        },
-        AttributeUpdates: attributeUpdates,
-      }).promise();
+    await this.tableClass.metadata.connection.documentClient.update({
+      TableName: this.tableClass.metadata.name,
+      Key: {
+        [this.metadata.hash.name]: hashKey,
+      },
+      AttributeUpdates: attributeUpdates,
+    }).promise();
   }
 }

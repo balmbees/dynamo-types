@@ -1,13 +1,7 @@
-import {
-  Table as TableMetadata,
-  Attribute as AttributeMetadata,
-} from '../metadata';
-import { Table, ITable } from '../table';
 import { DynamoDB } from 'aws-sdk';
 import * as _ from "lodash";
 
-import * as AttributeValue from './attribute_value';
-
+import { Table, ITable } from '../table';
 
 export function deserialize<T extends Table>(
   tableClass: ITable<T>,

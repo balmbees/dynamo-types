@@ -48,9 +48,11 @@ export class Table {
     }
     return this.__writer;
   }
+
   public async save() {
     return await this.writer.put(this);
   }
+
   public async delete() {
     return await this.writer.delete(this);
   }

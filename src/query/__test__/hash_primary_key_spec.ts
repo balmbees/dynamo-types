@@ -1,7 +1,5 @@
-import * as chai from 'chai';
+import { expect } from "chai";
 import * as faker from 'faker';
-
-const expect = chai.expect;
 
 import * as _ from 'lodash';
 

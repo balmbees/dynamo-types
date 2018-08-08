@@ -1,6 +1,4 @@
-import * as faker from 'faker';
-import * as chai from 'chai';
-const expect = chai.expect;
+import { expect } from "chai";
 
 import { Table } from '../../table';
 import * as Metadata from '../../metadata';

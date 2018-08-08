@@ -1,9 +1,7 @@
-import * as chai from 'chai';
-const expect = chai.expect;
+import { expect } from "chai";
 
 import { Attribute } from '../../metadata';
 import * as AttributeValue from '../attribute_value';
-import { DynamoDB } from "aws-sdk";
 
 describe("AttributeValue.parse", () => {
   it("should parse number", () => {

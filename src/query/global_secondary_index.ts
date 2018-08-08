@@ -1,5 +1,4 @@
 import { DynamoDB } from 'aws-sdk';
-import * as _ from 'lodash';
 
 import { Table, ITable } from '../table';
 

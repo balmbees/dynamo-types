@@ -1,5 +1,4 @@
-import * as Metadata from '../metadata';
-import { Table, ITable } from '../table';
+import { ITable } from '../table';
 
 export function FullPrimaryKey(hashKeyName: string, rangeKeyName: string) {
   return (tableClass: ITable<any>, propertyKey: string) => {

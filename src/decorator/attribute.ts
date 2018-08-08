@@ -2,19 +2,17 @@ import { Attribute as AttributeMetadata } from '../metadata';
 import { Table, ITable } from '../table';
 
 // Table Decorator
-export function Attribute<T>(options: { name?: string, timeToLive?: true } = {}) {
+export function Attribute(options: { name?: string, timeToLive?: true } = {}) {
   return (record: Table, propertyName: string) => {
     const tableClass = (record.constructor as ITable<any>);
     const nativeType = Reflect.getMetadata("design:type", record, propertyName);
 
-    tableClass.metadata.attributes.push(
-      {
-        name: options.name || propertyName,
-        propertyName: propertyName,
-        timeToLive: options.timeToLive,
-        type: _nativeTypeToAttributeMetadataType(nativeType),
-      }
-    );
+    tableClass.metadata.attributes.push({
+      name: options.name || propertyName,
+      propertyName: propertyName,
+      timeToLive: options.timeToLive,
+      type: _nativeTypeToAttributeMetadataType(nativeType),
+    });
   }
 }
 

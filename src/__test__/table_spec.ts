@@ -1,12 +1,6 @@
-import * as chai from 'chai';
-const expect = chai.expect;
+import { expect } from "chai";
 
-import {
-  Decorator,
-  Query,
-  Table,
-  Config,
-} from '../index';
+import { Decorator, Query, Table } from '../index';
 
 describe("Table", () => {
   @Decorator.Table({ name: `prod-Card${Math.random()}` })

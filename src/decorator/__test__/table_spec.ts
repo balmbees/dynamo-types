@@ -1,5 +1,4 @@
-import * as chai from 'chai';
-const expect = chai.expect;
+import { expect } from "chai";
 
 import { Table as TableDecorator } from '../table';
 import { Attribute as AttributeDecorator } from '../attribute';
@@ -7,7 +6,6 @@ import { FullPrimaryKey as FullPrimaryKeyDecorator } from '../full_primary_key';
 import { Writer as WriterDecorator } from '../writer';
 
 import * as Query from '../../query';
-
 
 import { Table } from '../../table';
 
