@@ -7,7 +7,7 @@ import * as _ from "lodash";
 const MAX_ITEMS = 25;
 
 // This is custom limit
-const MAX_RETRY = 5;
+const MAX_RETRY = Number.MAX_SAFE_INTEGER;
 
 export async function batchWrite(
   documentClient: DynamoDB.DocumentClient,
@@ -15,12 +15,12 @@ export async function batchWrite(
   requests: DynamoDB.DocumentClient.WriteRequest[]
 ) {
   try {
-    const res = await Promise.all(
+    const res = await Bluebird.map(
       _.chunk(requests, MAX_ITEMS)
-        .map(async chunk =>
-          await documentClient.batchWrite({ RequestItems: { [tableName]: chunk } }).promise()
-        )
-    );
+      , async chunk =>
+        await documentClient.batchWrite({ RequestItems: { [tableName]: chunk } }).promise()
+      , { concurrency: Number(process.env.BATCH_WRITE_CONCURRENCY || 1) }
+    )
 
     let failedRequests = _.flatMap(res, r => (r.UnprocessedItems || {})[tableName] || []);
     let retryCount = 0;
@@ -29,16 +29,18 @@ export async function batchWrite(
       failedRequests = _.flatMap(
         await Bluebird.mapSeries(
           _.chunk(failedRequests, MAX_ITEMS),
-          async (chunk) =>
-            await documentClient.batchWrite({ RequestItems: { [tableName]: chunk } }).promise()
+          async (chunk) => {
+            // console.log(`Chunk: ${chunk.length}`);
+            return await documentClient.batchWrite({ RequestItems: { [tableName]: chunk } }).promise()
+          }
         )
-        , r => (r.UnprocessedItems || {})[tableName]
+        , r => (r.UnprocessedItems || {})[tableName] || []
       )
 
       retryCount ++;
     }
   } catch (e) {
-    console.log(`Dynamo-Types batchWrite - ${JSON.stringify(requests, null, 2)}`);
+    console.log(`Dynamo-Types batchWrite - ${JSON.stringify(requests)}`);
     throw e;
   }
 }
