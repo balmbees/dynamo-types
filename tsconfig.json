@@ -7,7 +7,12 @@
         "outDir": "dst",
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "lib": [
+            "dom",
+            "es2015",
+            "esnext.asynciterable"
+        ]
     },
     "exclude": [
         "**/__test__/"
