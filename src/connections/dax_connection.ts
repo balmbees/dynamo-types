@@ -6,8 +6,14 @@ import { DynamoDB } from "aws-sdk";
 const AmazonDaxClient = require('amazon-dax-client');
 
 export class DAXConnection implements Connection {
-  constructor(options: { endpoints: string[] }) {
-    this.__client = new AmazonDaxClient({ endpoints: options.endpoints });
+  constructor(options: {
+    endpoints: string[],
+    requestTimeout?: number,
+  }) {
+    this.__client = new AmazonDaxClient({
+      endpoints: options.endpoints,
+      requestTimeout: options.requestTimeout,
+    });
     this.__documentClient = new DynamoDB.DocumentClient({ service: this.__client });
   }
 
