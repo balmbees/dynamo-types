@@ -144,7 +144,7 @@ export class CardStat extends Table {
 ### TS Compiler Setting
 DynamoTypes utilize [reflect-metadata](https://github.com/rbuckton/reflect-metadata) to read metadata (usually type of variables) from Typescript code. to do so, you must enable those options.
 
-```
+```json
 {
     "compilerOptions": {
         // other options..
