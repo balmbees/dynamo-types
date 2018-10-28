@@ -1,4 +1,4 @@
-[![Travis Build Status](https://travis-ci.org/balmbees/dynamo-typeorm.svg?branch=master)](https://travis-ci.org/breath103/dynamo-typeorm)
+[![Travis Build Status](https://travis-ci.org/balmbees/dynamo-types.svg?branch=master)](https://travis-ci.org/breath103/dynamo-types)
 [![npm version](https://badge.fury.io/js/dynamo-types.svg)](https://badge.fury.io/js/dynamo-types)
 
 # DynamoTypes
@@ -24,22 +24,22 @@ Typescript ORM of DynamoDB, written from scratch to fully support DynamoDB. Powe
    - You can specify this by setting the connection of table. 
 7. Optimized aws-sdk usage
    - aws-sdk has a serious problem of not reusing HTTP connection towards DynamoDB by default. check [this issue](https://github.com/aws/aws-sdk-js/issues/900)
-   - this could cause unbearable latency sometimes with showing > 100ms. it's more of an issue of NodeJS HTTP module but nevertheless, it has been optimized here by keep-alive [Code](https://github.com/balmbees/dynamo-typeorm/blob/master/src/connections/dynamodb_connection.ts#L37)
+   - this could cause unbearable latency sometimes with showing > 100ms. it's more of an issue of NodeJS HTTP module but nevertheless, it has been optimized here by keep-alive [Code](https://github.com/balmbees/dynamo-types/blob/master/src/connections/dynamodb_connection.ts#L37)
 8. AWS X-Ray support
-   - XRay is serverless distributed tracing service. In order to log DynamoDB transaction into it, you also need to some sort of risk monkey-patching. Here you can turn it on by setting [`process.env.ENABLE_XRAY = "true"`](https://github.com/balmbees/dynamo-typeorm/blob/e0391c1c171638d06f9262446d8cbcb14a573cc8/src/config.ts#L9)
+   - XRay is serverless distributed tracing service. In order to log DynamoDB transaction into it, you also need to some sort of risk monkey-patching. Here you can turn it on by setting [`process.env.ENABLE_XRAY = "true"`](https://github.com/balmbees/dynamo-types/blob/e0391c1c171638d06f9262446d8cbcb14a573cc8/src/config.ts#L9)
 9. Testing
    - You can change the endpoint of DynamoDB by setting the environment variable or setting new connection, So you can install [local-dynamo](https://www.npmjs.com/package/local-dynamo) locally at setup endpoint to local. refer package.json for the detailed how-to
 
 Also, dynamo-types let you overcome several limits that DynamoDB or the aws-sdk has.
 
 1. BatchWrite (batchDelete / batchPut) has a limit of a maximum of 25 items per request.
-   - dynamo-typeorm automatically splits given items into chunks of 25 and sends requests in parallel
+   - dynamo-types automatically splits given items into chunks of 25 and sends requests in parallel
 2. BatchGet has a limit of a maximum of 100 items per requests
-   - dynamo-typeorm automatically splits given keys to chunks of 100 and sends requests in parallel
+   - dynamo-types automatically splits given keys to chunks of 100 and sends requests in parallel
 3. BatchGet doesn't keep the order of items as it is in input keys,
-   - dynamo-typeorm sort return items based on input keys
+   - dynamo-types sort return items based on input keys
 4. BatchGet doesn't handle "missing items".
-   - dynamo-typeorm has "BatchGet" / "BatchGetFull" 
+   - dynamo-types has "BatchGet" / "BatchGetFull" 
      - BatchGet  
         order items follow to keys, missing items are just missing. return type Promise<Array<Item>>  
         so keys.legnth !== items.keys in this case  
@@ -157,7 +157,7 @@ DynamoTypes utilize [reflect-metadata](https://github.com/rbuckton/reflect-metad
 
 ### Connection
 DynamoDB supports 2 different kinds of connections. Plain connections to DynamoDB through HTTP, or through DAX.
-dynamo-typeorm supports this by letting you create a separate connection for each table.
+dynamo-types supports this by letting you create a separate connection for each table.
 
 ```typescript
 @Decorator.Table({ name: "prod-Card1", connection: new DAXConnection({ endpoints: ["dax-domain:8892"] }) })
@@ -181,4 +181,4 @@ class Card extends Table {
 
 Then any query that is sent to the Card table will be sent through DAXConnection.
 
-If you don't specify any connection, it automatically uses [default connection](https://github.com/balmbees/dynamo-typeorm/blob/e0391c1c171638d06f9262446d8cbcb14a573cc8/src/config.ts#L5), which is [DynamoDBConnection](https://github.com/balmbees/dynamo-typeorm/blob/e0391c1c171638d06f9262446d8cbcb14a573cc8/src/connections/dynamodb_connection.ts).
+If you don't specify any connection, it automatically uses [default connection](https://github.com/balmbees/dynamo-types/blob/e0391c1c171638d06f9262446d8cbcb14a573cc8/src/config.ts#L5), which is [DynamoDBConnection](https://github.com/balmbees/dynamo-types/blob/e0391c1c171638d06f9262446d8cbcb14a573cc8/src/connections/dynamodb_connection.ts).
