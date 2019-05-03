@@ -16,7 +16,7 @@
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "engines": {
-    "node": "8.10.*"
+    "node": ">=8.10.0"
   },
   "author": "Kurt Lee",
   "license": "ISC",
