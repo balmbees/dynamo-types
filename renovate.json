@@ -1,0 +1,7 @@
+{
+  "extends": [
+    "@vingle",
+    "@vingle:nodejs8",
+    "@vingle:lambda"
+  ]
+}
