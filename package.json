@@ -21,7 +21,7 @@
   "author": "Kurt Lee",
   "license": "ISC",
   "devDependencies": {
-    "@types/chai": "3.4.35",
+    "@types/chai": "3.5.2",
     "@types/faker": "^4.1.0",
     "@types/mocha": "2.2.48",
     "@types/node": "6.0.52",
