@@ -22,16 +22,16 @@
   "license": "ISC",
   "devDependencies": {
     "@types/chai": "4.2.3",
-    "@types/faker": "^4.1.0",
+    "@types/faker": "4.1.2",
     "@types/mocha": "2.2.48",
     "@types/node": "6.0.52",
     "chai": "4.2.0",
-    "check-engine": "^1.8.0",
+    "check-engine": "1.8.0",
     "dynamo-local": "0.0.4",
-    "faker": "^4.1.0",
+    "faker": "4.1.0",
     "local-dynamo": "0.5.0",
     "mocha": "3.5.3",
-    "publish": "^0.6.0",
+    "publish": "0.6.0",
     "typescript": "3.6.3"
   },
   "dependencies": {
