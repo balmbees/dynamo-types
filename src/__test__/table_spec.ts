@@ -63,8 +63,8 @@ describe("Table", () => {
     card.expiresAt = Math.floor(Date.now() / 1000) + 3; // unix timestamp after 3 sec
     await card.save();
 
-    // Wait 5 sec
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    // Wait 10 sec
+    await new Promise((resolve) => setTimeout(resolve, 10000));
 
     const reloaded = await Card.primaryKey.get(10, "100");
     expect(reloaded).to.eq(null);
