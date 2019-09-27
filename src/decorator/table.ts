@@ -1,9 +1,9 @@
-import * as Metadata from '../metadata';
-import { ITable, Table as TableClass } from '../table';
-import * as Query from '../query';
+import * as Metadata from "../metadata";
+import * as Query from "../query";
+import { ITable, Table as TableClass } from "../table";
 
-import Config from '../config';
-import { Connection } from '../connections';
+import Config from "../config";
+import { Connection } from "../connections";
 
 // Table Decorator
 export function Table(options: { name?: string, connection?: Connection } = {}) {
@@ -25,34 +25,34 @@ export function Table(options: { name?: string, connection?: Connection } = {}) 
 }
 
 function defineAttributeProperties(table: ITable<any>) {
-  table.metadata.attributes.forEach(attr => {
+  table.metadata.attributes.forEach((attr) => {
     Object.defineProperty(
       table.prototype,
       attr.propertyName,
       {
         configurable: true,
         enumerable: true,
-        get: function(this:TableClass) {
+        get(this: TableClass) {
           return this.getAttribute(attr.name);
         },
-        set: function(this:TableClass, v) {
+        set(this: TableClass, v) {
           this.setAttribute(attr.name, v);
         },
-      }
+      },
     );
   });
 }
 
 function defineGlobalSecondaryIndexes(table: ITable<any>) {
-  table.metadata.globalSecondaryIndexes.forEach(metadata => {
-    if (metadata.type === 'HASH') {
+  table.metadata.globalSecondaryIndexes.forEach((metadata) => {
+    if (metadata.type === "HASH") {
       Object.defineProperty(
         table,
         metadata.propertyName,
         {
           value: new Query.HashGlobalSecondaryIndex(table, metadata),
           writable: false,
-        }
+        },
       );
     } else {
       Object.defineProperty(
@@ -61,21 +61,21 @@ function defineGlobalSecondaryIndexes(table: ITable<any>) {
         {
           value: new Query.FullGlobalSecondaryIndex(table, metadata),
           writable: false,
-        }
+        },
       );
     }
   });
 }
 
 function defineLocalSecondaryIndexes(table: ITable<any>) {
-  table.metadata.localSecondaryIndexes.forEach(metadata => {
+  table.metadata.localSecondaryIndexes.forEach((metadata) => {
     Object.defineProperty(
       table,
       metadata.propertyName,
       {
         value: new Query.LocalSecondaryIndex(table, metadata),
         writable: false,
-      }
+      },
     );
   });
 }
@@ -90,7 +90,7 @@ function definePrimaryKeyProperty(table: ITable<any>) {
         {
           value: new Query.FullPrimaryKey(table, pkMetdata),
           writable: false,
-        }
+        },
       );
     } else {
       Object.defineProperty(
@@ -99,7 +99,7 @@ function definePrimaryKeyProperty(table: ITable<any>) {
         {
           value: new Query.HashPrimaryKey(table, pkMetdata),
           writable: false,
-        }
+        },
       );
     }
   }

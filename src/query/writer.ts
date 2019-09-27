@@ -1,18 +1,17 @@
 // Since in DyanmoDB writing is free from any kind index or what soever
 // whole "writing" operations are bundled into one here
 
-import { ITable, Table } from '../table';
-import { DynamoDB } from 'aws-sdk';
+import { ITable, Table } from "../table";
 
-import * as Codec from '../codec';
-import * as Metadata from '../metadata';
-import { batchWrite } from './batch_write';
+import * as Codec from "../codec";
+import * as Metadata from "../metadata";
+import { batchWrite } from "./batch_write";
 
 export class Writer<T extends Table> {
   constructor(private tableClass: ITable<T>) {
   }
 
-  async put(record: T) {
+  public async put(record: T) {
     try {
       const res = await this.tableClass.metadata.connection.documentClient.put({
         TableName: this.tableClass.metadata.name,
@@ -22,26 +21,27 @@ export class Writer<T extends Table> {
       record.setAttributes(res.Attributes || {});
       return record;
     } catch (e) {
+      // tslint:disable-next-line
       console.log(`Dynamo-Types Put - ${JSON.stringify(record.serialize(), null, 2)}`);
       throw e;
     }
   }
 
-  async batchPut(records: T[]) {
+  public async batchPut(records: T[]) {
     return await batchWrite(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
-      records.map(record => {
+      records.map((record) => {
         return {
           PutRequest: {
             Item: Codec.serialize(this.tableClass, record),
           },
         };
-      })
+      }),
     );
   }
 
-  async delete(record: T) {
+  public async delete(record: T) {
     await this.tableClass.metadata.connection.documentClient.delete({
       TableName: this.tableClass.metadata.name,
       Key: KeyFromRecord(record, this.tableClass.metadata.primaryKey),
@@ -51,16 +51,16 @@ export class Writer<T extends Table> {
 
 function KeyFromRecord<T extends Table>(
   record: T,
-  metadata: Metadata.Indexes.FullPrimaryKeyMetadata | Metadata.Indexes.HashPrimaryKeyMetadata
+  metadata: Metadata.Indexes.FullPrimaryKeyMetadata | Metadata.Indexes.HashPrimaryKeyMetadata,
 ) {
-  if (metadata.type == 'HASH') {
+  if (metadata.type === "HASH") {
     return {
-      [metadata.hash.name]: record.getAttribute(metadata.hash.name)
+      [metadata.hash.name]: record.getAttribute(metadata.hash.name),
     };
   } else {
     return {
       [metadata.hash.name]: record.getAttribute(metadata.hash.name),
-      [metadata.range.name]: record.getAttribute(metadata.range.name)
+      [metadata.range.name]: record.getAttribute(metadata.range.name),
     };
   }
 }

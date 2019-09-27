@@ -1,21 +1,20 @@
-import {
-  Table as TableMetadata,
-  Attribute as AttributeMetadata,
-} from '../metadata';
-import { Table, ITable } from '../table';
-import { DynamoDB } from 'aws-sdk';
+import { DynamoDB } from "aws-sdk";
 import * as _ from "lodash";
+import {
+  Attribute as AttributeMetadata,
+  Table as TableMetadata,
+} from "../metadata";
+import { ITable, Table } from "../table";
 
-import * as AttributeValue from './attribute_value';
-
+import * as AttributeValue from "./attribute_value";
 
 export function deserialize<T extends Table>(
   tableClass: ITable<T>,
-  dynamoAttributes: DynamoDB.DocumentClient.AttributeMap
+  dynamoAttributes: DynamoDB.DocumentClient.AttributeMap,
 ): T {
   const record = new tableClass();
 
-  tableClass.metadata.attributes.forEach(attributeMetadata => {
+  tableClass.metadata.attributes.forEach((attributeMetadata) => {
     const attributeValue = dynamoAttributes[attributeMetadata.name];
     if (!dynamoAttributes.hasOwnProperty(attributeMetadata.name)) {
       // attribute is defined but not provided by DynamoDB
@@ -31,7 +30,7 @@ export function deserialize<T extends Table>(
 
 export function unmarshal<T extends Table>(
   tableClass: ITable<T>,
-  dynamoAttributes: DynamoDB.AttributeMap
+  dynamoAttributes: DynamoDB.AttributeMap,
 ): T {
   const result = DynamoDB.Converter.unmarshall(dynamoAttributes);
   _.map(result, (val, key) => {

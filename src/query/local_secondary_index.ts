@@ -1,11 +1,11 @@
-import { DynamoDB } from 'aws-sdk';
-import * as _ from 'lodash';
+import { DynamoDB } from "aws-sdk";
+import * as _ from "lodash";
 
-import { Table, ITable } from '../table';
+import { ITable, Table } from "../table";
 
-import * as Metadata from '../metadata';
-import * as Codec from '../codec';
-import * as Query from './query';
+import * as Codec from "../codec";
+import * as Metadata from "../metadata";
+import * as Query from "./query";
 
 const HASH_KEY_REF = "#hk";
 const HASH_VALUE_REF = ":hkv";
@@ -15,27 +15,27 @@ const RANGE_KEY_REF = "#rk";
 export class LocalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType> {
   constructor(
     readonly tableClass: ITable<T>,
-    readonly metadata: Metadata.Indexes.LocalSecondaryIndexMetadata
+    readonly metadata: Metadata.Indexes.LocalSecondaryIndexMetadata,
   ) {}
 
-  async query(options: {
+  public async query(options: {
     hash: HashKeyType,
     range?: Query.Conditions<RangeKeyType>,
     rangeOrder?: "ASC" | "DESC",
     limit?: number,
     exclusiveStartKey?: DynamoDB.DocumentClient.Key,
-    consistent?: boolean
+    consistent?: boolean,
   }) {
     if (!options.rangeOrder) {
       options.rangeOrder = "ASC";
     }
-    const ScanIndexForward = options.rangeOrder === "ASC"
+    const ScanIndexForward = options.rangeOrder === "ASC";
 
     const params: DynamoDB.DocumentClient.QueryInput = {
       TableName: this.tableClass.metadata.name,
       Limit: options.limit,
       IndexName: this.metadata.name,
-      ScanIndexForward: ScanIndexForward,
+      ScanIndexForward,
       ExclusiveStartKey: options.exclusiveStartKey,
       ReturnConsumedCapacity: "TOTAL",
       KeyConditionExpression: `${HASH_KEY_REF} = ${HASH_VALUE_REF}`,
@@ -58,7 +58,7 @@ export class LocalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType> {
     const result = await this.tableClass.metadata.connection.documentClient.query(params).promise();
 
     return {
-      records: (result.Items || []).map(item => {
+      records: (result.Items || []).map((item) => {
         return Codec.deserialize(this.tableClass, item);
       }),
       count: result.Count,

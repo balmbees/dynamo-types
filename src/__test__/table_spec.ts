@@ -1,34 +1,31 @@
-import * as chai from 'chai';
-const expect = chai.expect;
+import { expect } from "chai";
 
 import {
   Decorator,
   Query,
   Table,
-  Config,
-} from '../index';
+} from "../index";
 
 describe("Table", () => {
   @Decorator.Table({ name: `prod-Card${Math.random()}` })
   class Card extends Table {
+    @Decorator.FullPrimaryKey("id", "title")
+    public static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
+
+    @Decorator.HashGlobalSecondaryIndex("title")
+    public static readonly titleIndex: Query.HashGlobalSecondaryIndex<Card, string>;
+
+    @Decorator.Writer()
+    public static readonly writer: Query.Writer<Card>;
+
     @Decorator.Attribute()
     public id: number;
 
     @Decorator.Attribute()
     public title: string;
 
-    // @Decorator.Attribute({ timeToLive: true })
-    @Decorator.Attribute()
+    @Decorator.Attribute({ timeToLive: true })
     public expiresAt: number;
-
-    @Decorator.FullPrimaryKey('id', 'title')
-    static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
-
-    @Decorator.HashGlobalSecondaryIndex('title')
-    static readonly titleIndex: Query.HashGlobalSecondaryIndex<Card, string>;
-
-    @Decorator.Writer()
-    static readonly writer: Query.Writer<Card>;
   }
 
   beforeEach(async () => {
@@ -59,21 +56,17 @@ describe("Table", () => {
     expect(reloadedCard!.title).to.eq("100");
   });
 
-  // https://github.com/aws/aws-sdk-js/issues/1527
-  // TTL doesn't supported at dynamo-local Yet
-  xit("should works with TTL", async () => {
+  it("should works with TTL", async () => {
     const card = new Card();
     card.id = 10;
     card.title = "100";
-    card.expiresAt = ((new Date()).valueOf() / 1000) + 100;
+    card.expiresAt = Math.floor(Date.now() / 1000) + 3; // unix timestamp after 3 sec
     await card.save();
 
-    await new Promise((resolve, reject) => {
-      setTimeout(resolve, 300);
-    });
+    // Wait 5 sec
+    await new Promise((resolve) => setTimeout(resolve, 5000));
 
-    const reloadCard = await Card.primaryKey.get(10, "100");
-    console.log(reloadCard);
-    expect(reloadCard).to.be.null;
+    const reloaded = await Card.primaryKey.get(10, "100");
+    expect(reloaded).to.eq(null);
   });
 });

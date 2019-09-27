@@ -1,17 +1,22 @@
-import * as chai from 'chai';
-const expect = chai.expect;
+import { expect } from "chai";
 
-import { Table } from '../../table';
-import * as Metadata from '../../metadata';
+import { Table } from "../../table";
 
-import { FullPrimaryKey } from '../full_primary_key';
+import * as Decorator from "../../decorator";
 
-import * as Decorator from '../../decorator';
-
-import * as Query from '../index';
+import * as Query from "../index";
 
 @Decorator.Table({ name: "prod-Card" })
 class Card extends Table {
+  @Decorator.FullPrimaryKey("id", "title")
+  public static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
+
+  @Decorator.HashGlobalSecondaryIndex("title")
+  public static readonly hashTitleIndex: Query.HashGlobalSecondaryIndex<Card, string>;
+
+  @Decorator.FullGlobalSecondaryIndex("title", "id")
+  public static readonly fullTitleIndex: Query.FullGlobalSecondaryIndex<Card, string, number>;
+
   @Decorator.Attribute()
   public id: number;
 
@@ -20,19 +25,10 @@ class Card extends Table {
 
   @Decorator.Attribute()
   public count: number;
-
-  @Decorator.FullPrimaryKey('id', 'title')
-  static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
-
-  @Decorator.HashGlobalSecondaryIndex('title')
-  static readonly hashTitleIndex: Query.HashGlobalSecondaryIndex<Card, string>;
-
-  @Decorator.FullGlobalSecondaryIndex('title', 'id')
-  static readonly fullTitleIndex: Query.FullGlobalSecondaryIndex<Card, string, number>;
 }
 
 describe("HashGlobalSecondaryIndex", () => {
-  beforeEach(async() => {
+  beforeEach(async () => {
     await Card.createTable();
   });
 
@@ -47,23 +43,22 @@ describe("HashGlobalSecondaryIndex", () => {
         Item: {
           id: 10,
           title: "abc",
-        }
+        },
       }).promise();
       await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 11,
           title: "abd",
-        }
+        },
       }).promise();
       await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 12,
           title: "abd",
-        }
+        },
       }).promise();
-
 
       const res = await Card.hashTitleIndex.query("abd");
       expect(res.records.length).to.eq(2);
@@ -74,7 +69,7 @@ describe("HashGlobalSecondaryIndex", () => {
 });
 
 describe("FullGlobalSecondaryIndex", () => {
-  beforeEach(async() => {
+  beforeEach(async () => {
     await Card.createTable();
   });
 
@@ -89,36 +84,35 @@ describe("FullGlobalSecondaryIndex", () => {
         Item: {
           id: 10,
           title: "abc",
-        }
+        },
       }).promise();
       await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 11,
           title: "abd",
-        }
+        },
       }).promise();
       await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 12,
           title: "abd",
-        }
+        },
       }).promise();
       await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 13,
           title: "abd",
-        }
+        },
       }).promise();
-
 
       const res = await Card.fullTitleIndex.query({
         hash: "abd",
         range: [">=", 12],
         rangeOrder: "DESC",
-      })
+      });
       expect(res.records.length).to.eq(2);
 
       expect(res.records[0].id).to.eq(13);

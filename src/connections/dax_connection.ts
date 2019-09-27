@@ -3,9 +3,12 @@ import { Connection } from "./connection";
 import * as AWS from "aws-sdk";
 import { DynamoDB } from "aws-sdk";
 
-const AmazonDaxClient = require('amazon-dax-client');
+const AmazonDaxClient = require("amazon-dax-client"); // tslint:disable-line
 
 export class DAXConnection implements Connection {
+  private __documentClient: AWS.DynamoDB.DocumentClient; // tslint:disable-line
+  private __client: AWS.DynamoDB; // tslint:disable-line
+
   constructor(options: {
     endpoints: string[],
     requestTimeout?: number,
@@ -17,12 +20,10 @@ export class DAXConnection implements Connection {
     this.__documentClient = new DynamoDB.DocumentClient({ service: this.__client });
   }
 
-  private __documentClient: AWS.DynamoDB.DocumentClient;
   public get documentClient() {
     return this.__documentClient;
   }
 
-  private __client: AWS.DynamoDB;
   public get client() {
     return this.__client;
   }

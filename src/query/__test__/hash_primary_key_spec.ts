@@ -1,26 +1,27 @@
-import * as chai from 'chai';
-import * as faker from 'faker';
+import { expect } from "chai";
+import * as faker from "faker";
 
-const expect = chai.expect;
+import * as _ from "lodash";
 
-import * as _ from 'lodash';
+import * as Metadata from "../../metadata";
+import { Table } from "../../table";
 
-import { Table } from '../../table';
-import * as Metadata from '../../metadata';
-
-import { HashPrimaryKey } from '../hash_primary_key';
+import { HashPrimaryKey } from "../hash_primary_key";
 
 import {
-  Table as TableDecorator,
   Attribute as AttributeDecorator,
   HashPrimaryKey as HashPrimaryKeyDecorator,
-} from '../../decorator';
+  Table as TableDecorator,
+} from "../../decorator";
 
-import * as Query from '../index';
+import * as Query from "../index";
 
 describe("HashPrimaryKey", () => {
   @TableDecorator({ name: "prod-card3" })
   class Card extends Table {
+    @HashPrimaryKeyDecorator("id")
+    public static readonly primaryKey: Query.HashPrimaryKey<Card, number>;
+
     @AttributeDecorator()
     public id: number;
 
@@ -29,9 +30,6 @@ describe("HashPrimaryKey", () => {
 
     @AttributeDecorator()
     public count: number;
-
-    @HashPrimaryKeyDecorator('id')
-    static readonly primaryKey: Query.HashPrimaryKey<Card, number>;
   }
 
   let primaryKey: HashPrimaryKey<Card, number>;
@@ -41,7 +39,7 @@ describe("HashPrimaryKey", () => {
 
     primaryKey = new HashPrimaryKey<Card, number>(
       Card,
-      Card.metadata.primaryKey as Metadata.Indexes.HashPrimaryKeyMetadata
+      Card.metadata.primaryKey as Metadata.Indexes.HashPrimaryKeyMetadata,
     );
   });
 
@@ -56,7 +54,7 @@ describe("HashPrimaryKey", () => {
         Item: {
           id: 10,
           title: "abc",
-        }
+        },
       }).promise();
 
       await primaryKey.delete(10);
@@ -84,13 +82,12 @@ describe("HashPrimaryKey", () => {
 
       const ids = _.sortBy(
         _.concat(res1.records, res2.records),
-        (item) => item.id
-      ).map(c => c.id);
+        (item) => item.id,
+      ).map((c) => c.id);
 
-      expect(ids).to.deep.eq( _.sortBy(cards.map(c => c.id), i => i) );
+      expect(ids).to.deep.eq( _.sortBy(cards.map((c) => c.id), (i) => i) );
     });
   });
-
 
   describe("#batchGet", async () => {
     it ("should return results in order", async () => {
@@ -108,10 +105,10 @@ describe("HashPrimaryKey", () => {
         await createCard(),
       ];
 
-      const result1 = (await primaryKey.batchGet(cards.map(c => c.id))).records;
+      const result1 = (await primaryKey.batchGet(cards.map((c) => c.id))).records;
 
       // it should keep the order
-      expect(result1.map(c => c.id)).to.deep.eq(cards.map(c => c.id));
+      expect(result1.map((c) => c.id)).to.deep.eq(cards.map((c) => c.id));
     });
   });
 });

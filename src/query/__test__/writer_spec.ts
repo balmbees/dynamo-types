@@ -1,28 +1,27 @@
-import * as chai from 'chai';
-const expect = chai.expect;
+import { expect } from "chai";
 
 import {
-  Table as TableDecorator,
   Attribute as AttributeDecorator,
   FullPrimaryKey as FullPrimaryKeyDecorator,
-} from '../../decorator';
+  Table as TableDecorator,
+} from "../../decorator";
 
-import * as TableOperations from '../table_operations';
-import * as Query from '../index';
-import { Writer } from '../writer';
+import * as Query from "../index";
+import * as TableOperations from "../table_operations";
+import { Writer } from "../writer";
 
-import { Table } from '../../table';
+import { Table } from "../../table";
 
 @TableDecorator({ name: "prod-Card4" })
 class Card extends Table {
+  @FullPrimaryKeyDecorator("id", "title")
+  public static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
+
   @AttributeDecorator()
   public id: number;
 
   @AttributeDecorator()
   public title: string;
-
-  @FullPrimaryKeyDecorator('id', 'title')
-  static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
 }
 
 describe("Writer", () => {

@@ -17,4 +17,3 @@ export interface Metadata {
   timeToLive: true | undefined;
   type: Type;
 }
-

@@ -1,11 +1,6 @@
 {
-    "defaultSeverity": "error",
-    "extends": [
-    ],
-    "jsRules": {},
+    "extends": ["@vingle/tslint-preset"],
     "rules": {
-        "object-literal-sort-keys": false,
-        "interface-name": [true, "never-prefix"]
-    },
-    "rulesDirectory": []
+        "interface-name": false
+    }
 }

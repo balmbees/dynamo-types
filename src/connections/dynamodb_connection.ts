@@ -7,6 +7,9 @@ import * as HTTP from "http";
 import * as HTTPS from "https";
 
 export class DynamoDBConnection implements Connection {
+  private __documentClient: AWS.DynamoDB.DocumentClient; // tslint:disable-line
+  private __client: AWS.DynamoDB; // tslint:disable-line
+
   constructor(options: {
     endpoint: string | undefined,
     enableAWSXray: boolean,
@@ -15,7 +18,7 @@ export class DynamoDBConnection implements Connection {
       endpoint: options.endpoint,
       httpOptions: {
         agent: this.httpAgent(options.endpoint),
-      }
+      },
     };
 
     if (options.enableAWSXray) {
@@ -38,22 +41,20 @@ export class DynamoDBConnection implements Connection {
   private httpAgent(endpoint: string | undefined) {
     if (endpoint && endpoint.startsWith("http://")) {
       return new HTTP.Agent({
-        keepAlive: true
+        keepAlive: true,
       });
     } else {
       return new HTTPS.Agent({
         rejectUnauthorized: true,
-        keepAlive: true
+        keepAlive: true,
       });
     }
   }
 
-  private __documentClient: AWS.DynamoDB.DocumentClient;
   public get documentClient() {
     return this.__documentClient;
   }
 
-  private __client: AWS.DynamoDB;
   public get client() {
     return this.__client;
   }

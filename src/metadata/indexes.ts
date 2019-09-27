@@ -1,4 +1,4 @@
-import * as Attribute from './attribute';
+import * as Attribute from "./attribute";
 
 export interface Metadata {
   readonly name: string; // Name of index
@@ -7,20 +7,20 @@ export interface Metadata {
 }
 
 export interface HashPrimaryKeyMetadata {
-  readonly type: 'HASH';
+  readonly type: "HASH";
   readonly name: string; // Name on Property
   readonly hash: Attribute.Metadata;
 }
 
 export interface FullPrimaryKeyMetadata {
-  readonly type: 'FULL';
+  readonly type: "FULL";
   readonly name: string; // Name on Property
   readonly hash: Attribute.Metadata;
   readonly range: Attribute.Metadata;
 }
 
 export interface FullGlobalSecondaryIndexMetadata {
-  readonly type: 'FULL';
+  readonly type: "FULL";
   readonly name: string;
   readonly propertyName: string;
   readonly hash: Attribute.Metadata;
@@ -28,7 +28,7 @@ export interface FullGlobalSecondaryIndexMetadata {
 }
 
 export interface HashGlobalSecondaryIndexMetadata {
-  readonly type: 'HASH';
+  readonly type: "HASH";
   readonly name: string;
   readonly propertyName: string;
   readonly hash: Attribute.Metadata;

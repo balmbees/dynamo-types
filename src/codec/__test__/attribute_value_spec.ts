@@ -1,9 +1,7 @@
-import * as chai from 'chai';
-const expect = chai.expect;
+import { expect } from "chai";
 
-import { Attribute } from '../../metadata';
-import * as AttributeValue from '../attribute_value';
-import { DynamoDB } from "aws-sdk";
+import { Attribute } from "../../metadata";
+import * as AttributeValue from "../attribute_value";
 
 describe("AttributeValue.parse", () => {
   it("should parse number", () => {
@@ -30,15 +28,15 @@ describe("AttributeValue.parse", () => {
         { S: "10" },
         { N: "20" },
         { L: [
-            { BOOL: false }
+            { BOOL: false },
           ] },
-      ]
+      ],
     })).to.deep.eq({ value: [
       "10",
       20,
       [
         false,
-      ]
+      ],
     ], type: Attribute.Type.Array});
   });
 
@@ -48,15 +46,15 @@ describe("AttributeValue.parse", () => {
         a: { S: "10" },
         b: { N: "20" },
         c: { L: [
-            { BOOL: false }
+            { BOOL: false },
           ] },
-      }
+      },
     })).to.deep.eq({ value: {
       a: "10",
       b: 20,
       c: [
-        false
-      ]
+        false,
+      ],
     }, type: Attribute.Type.Map});
   });
 

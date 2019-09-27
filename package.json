@@ -27,6 +27,7 @@
     "@types/mocha": "5.2.7",
     "@types/node": "^8.10.54",
     "@types/reflect-metadata": "0.1.0",
+    "@vingle/tslint-preset": "1.0.0",
     "chai": "4.2.0",
     "check-engine": "1.8.1",
     "dynamo-local": "0.0.4",
@@ -34,6 +35,7 @@
     "local-dynamo": "0.5.0",
     "mocha": "6.2.0",
     "publish": "^0.6.0",
+    "tslint": "5.20.0",
     "typescript": "3.6.3"
   },
   "dependencies": {

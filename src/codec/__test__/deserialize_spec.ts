@@ -1,11 +1,11 @@
-import * as chai from 'chai';
-const expect = chai.expect;
+import { expect } from "chai";
 
-import { deserialize, unmarshal } from '../deserialize';
-import * as Metadata from '../../metadata';
+import * as Metadata from "../../metadata";
+import { deserialize, unmarshal } from "../deserialize";
 
-import { Table } from '../../table';
+import { Table } from "../../table";
 
+// tslint:disable:max-classes-per-file
 class Card extends Table {
   public id: number;
 }
@@ -21,18 +21,20 @@ class Card extends Table {
       name: "id",
       type: Metadata.Attribute.Type.Number,
     },
-  }
-}
+  },
+};
 
 class Falsy extends Table {
   public foo: number;
   public bar: boolean;
   public baz: null;
   public baq: string;
-  public vin: Array<number>;
-  public gle: Array<string>;
-  public qqq: Object
+  public vin: number[];
+  public gle: string[];
+  public qqq: object;
 }
+// tslint:enable:max-classes-per-file
+
 (Falsy as any).metadata = {
   name: "falsy",
   attributes: [{
@@ -63,8 +65,8 @@ class Falsy extends Table {
       name: "foo",
       type: Metadata.Attribute.Type.Number,
     },
-  }
-}
+  },
+};
 
 describe("#deserialize", () => {
   it("should deserialize data", () => {
@@ -72,7 +74,7 @@ describe("#deserialize", () => {
       Card,
       {
         id: 10,
-      }
+      },
     );
 
     expect(record.getAttribute("id")).to.eq(10);
@@ -86,7 +88,7 @@ describe("#deserialize", () => {
         bar: false,
         baz: null,
         baq: "",
-      }
+      },
     );
 
     expect(record.getAttribute("foo")).to.be.eq(0);
@@ -104,7 +106,7 @@ describe("#unmarshal", () => {
         id: {
           N: "10",
         },
-      }
+      },
     );
 
     expect(record.getAttribute("id")).to.eq(10);
@@ -135,11 +137,11 @@ describe("#unmarshal", () => {
         qqq: {
           M: {
             id: {
-              N: "12312"
+              N: "12312",
             },
           },
         },
-      }
+      },
     );
 
     expect(record.getAttribute("foo")).to.be.eq(0);
