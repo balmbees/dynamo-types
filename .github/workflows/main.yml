@@ -1,0 +1,34 @@
+name: workflow
+on: [push]
+jobs:
+  job:
+    runs-on: ubuntu-latest
+    container: node:lts
+    timeout-minutes: 15
+    services:
+      dynamodb:
+        image: amazon/dynamodb-local
+        # @note Github overwrites WORKDIR to repository path, so overwrite that again
+        options: >-
+          --workdir /home/dynamodblocal
+          --health-cmd "curl --fail http://127.0.0.1:8000/shell/ || exit 1" --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v1
+      - name: Prepare
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Test
+        run: npm test
+        env:
+          DYNAMO_TYPES_ENDPOINT: http://dynamodb:8000
+      - name: Publish
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        # npm will not execute `prepublisnOnly` lifecycle hook if user is root.
+        # @see https://github.com/semantic-release/semantic-release/issues/956#issuecomment-431097773
+        run: |
+          npm run prepublishOnly
+          npx semantic-release
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
