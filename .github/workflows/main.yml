@@ -26,9 +26,13 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         # npm will not execute `prepublisnOnly` lifecycle hook if user is root.
         # @see https://github.com/semantic-release/semantic-release/issues/956#issuecomment-431097773
+        #
+        # Currently latest release of env-ci has an branch-detection issue with Github Actions.
+        # We should migrate semantic-release run to `npx semantic-release`
+        # @see https://github.com/pvdlg/env-ci/issues/103
         run: |
           npm run prepublishOnly
-          npx semantic-release
+          npm i -g semantic-release env-ci@4.1.1 --no-save
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
