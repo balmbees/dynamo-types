@@ -5,9 +5,12 @@
   "main": "./dst/index.js",
   "typings": "./dst/index.d.ts",
   "scripts": {
-    "build": "check-engine && rm -Rf dst && tsc -d && cd src && find . -name '*.json' -type f -exec cp {} ../dst/{} \\; && cd ..",
-    "pretest": "rm -Rf dst && tsc -p ./tsconfig.test.json && cd src && find . -name '*.json' -type f -exec cp {} ../dst/{} \\; && cd ..",
-    "test": "AWS_REGION=us-east-1 AWS_ACCESS_KEY_ID=mock AWS_SECRET_ACCESS_KEY=mock DYNAMO_TYPES_ENDPOINT=http://127.0.0.1:8000 mocha -t 20000 dst/**/__test__/**/*.js",
+    "prebuild": "check-engine && rm -rf dst",
+    "build": "tsc",
+    "postbuild": "cd src && find . -name '*.json' -type f -exec cp {} ../dst/{} \\; && cd ..",
+    "pretest": "npm run build -- -p ./tsconfig.test.json",
+    "test": "env AWS_REGION=us-east-1 AWS_ACCESS_KEY_ID=mock AWS_SECRET_ACCESS_KEY=mock mocha -t 20000 dst/**/__test__/**/*.js",
+    "test:local": "env DYNAMO_TYPES_ENDPOINT=http://127.0.0.1:8000 npm test",
     "prepublishOnly": "npm run build",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
