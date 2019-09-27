@@ -2,6 +2,6 @@
   "extends": [
     "@vingle",
     "@vingle:nodejs8",
-    "@vingle:lambda"
+    "@vingle:semantic-commit"
   ]
 }
