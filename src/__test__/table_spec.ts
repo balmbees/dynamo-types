@@ -66,7 +66,7 @@ describe("Table", () => {
     // Wait 10 sec
     await new Promise((resolve) => setTimeout(resolve, 10000));
 
-    const reloaded = await Card.primaryKey.get(10, "100");
+    const reloaded = await Card.primaryKey.get(10, "100", { consistent: true });
     expect(reloaded).to.eq(null);
   });
 });
