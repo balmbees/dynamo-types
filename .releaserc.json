@@ -1,0 +1,3 @@
+{
+  "extends": "@vingle/semantic-release-config"
+}
