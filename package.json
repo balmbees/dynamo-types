@@ -9,7 +9,6 @@
     "pretest": "rm -Rf dst && tsc -p ./tsconfig.test.json && cd src && find . -name '*.json' -type f -exec cp {} ../dst/{} \\; && cd ..",
     "test": "AWS_REGION=us-east-1 AWS_ACCESS_KEY_ID=mock AWS_SECRET_ACCESS_KEY=mock DYNAMO_TYPES_ENDPOINT=http://127.0.0.1:8000 mocha -t 20000 dst/**/__test__/**/*.js",
     "prepublish": "npm run build",
-    "ci:publish": "publish",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "engines": {
@@ -30,7 +29,6 @@
     "dynamo-local": "0.0.4",
     "faker": "^4.1.0",
     "mocha": "6.2.0",
-    "publish": "^0.6.0",
     "tslint": "5.20.0",
     "typescript": "3.6.3"
   },
