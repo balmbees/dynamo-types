@@ -60,11 +60,11 @@ describe("Table", () => {
     const card = new Card();
     card.id = 10;
     card.title = "100";
-    card.expiresAt = Math.floor(Date.now() / 1000) + 3; // unix timestamp after 3 sec
+    card.expiresAt = Math.floor(Date.now() / 1000) + 5; // unix timestamp after 5 sec
     await card.save();
 
-    // Wait 10 sec
-    await new Promise((resolve) => setTimeout(resolve, 10000));
+    // Wait 15 sec
+    await new Promise((resolve) => setTimeout(resolve, 15000));
 
     const reloaded = await Card.primaryKey.get(10, "100", { consistent: true });
     expect(reloaded).to.eq(null);
