@@ -4,6 +4,7 @@
         "target": "es2017",
         "noImplicitAny": true,
         "sourceMap": true,
+        "declaration": true,
         "outDir": "dst",
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
