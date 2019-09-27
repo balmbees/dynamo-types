@@ -33,6 +33,7 @@ jobs:
         run: |
           npm run prepublishOnly
           npm i -g semantic-release env-ci@4.1.1 --no-save
+          semantic-release
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
