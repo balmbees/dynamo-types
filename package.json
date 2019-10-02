@@ -41,7 +41,7 @@
     "check-engine": "1.8.1",
     "dynamo-local": "0.0.4",
     "faker": "4.1.0",
-    "husky": "3.0.7",
+    "husky": "3.0.8",
     "mocha": "6.2.1",
     "tslint": "5.20.0",
     "typescript": "3.6.3"
