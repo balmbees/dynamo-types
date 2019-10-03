@@ -29,7 +29,7 @@
   "homepage": "https://github.com/balmbees/dynamo-types#readme",
   "devDependencies": {
     "@types/chai": "4.2.3",
-    "@types/faker": "4.1.5",
+    "@types/faker": "4.1.6",
     "@types/lodash": "4.14.141",
     "@types/mocha": "5.2.7",
     "@types/node": "8.10.54",
