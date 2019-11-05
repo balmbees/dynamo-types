@@ -44,7 +44,7 @@
     "husky": "3.0.9",
     "mocha": "6.2.2",
     "tslint": "5.20.0",
-    "typescript": "3.6.4"
+    "typescript": "3.7.2"
   },
   "dependencies": {
     "amazon-dax-client": "^1.2.2",
