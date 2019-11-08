@@ -30,7 +30,7 @@
   "devDependencies": {
     "@types/chai": "4.2.4",
     "@types/faker": "4.1.7",
-    "@types/lodash": "4.14.145",
+    "@types/lodash": "4.14.146",
     "@types/mocha": "5.2.7",
     "@types/node": "8.10.58",
     "@types/reflect-metadata": "0.1.0",
