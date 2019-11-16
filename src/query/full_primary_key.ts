@@ -1,5 +1,4 @@
 import { DynamoDB } from "aws-sdk";
-import * as _ from "lodash";
 
 import { ITable, Table } from "../table";
 
@@ -167,7 +166,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     totalSegments?: number,
     segment?: number,
     exclusiveStartKey?: DynamoDB.DocumentClient.Key,
-  }) {
+  } = {}) {
     const params: DynamoDB.DocumentClient.ScanInput = {
       TableName: this.tableClass.metadata.name,
       Limit: options.limit,

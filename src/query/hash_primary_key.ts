@@ -49,7 +49,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     totalSegments?: number,
     segment?: number,
     exclusiveStartKey?: DynamoDB.DocumentClient.Key,
-  }) {
+  } = {}) {
     const params: DynamoDB.DocumentClient.ScanInput = {
       TableName: this.tableClass.metadata.name,
       Limit: options.limit,
