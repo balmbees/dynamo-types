@@ -66,6 +66,32 @@ describe("HashGlobalSecondaryIndex", () => {
       expect(res.records[1].id).to.eq(11);
     });
   });
+
+  describe("#scan", async () => {
+    const cardIds = [111, 222, 333, 444, 555];
+
+    beforeEach(async () => {
+      for (const cardId of cardIds) {
+        await Card.metadata.connection.documentClient.put({
+          TableName: Card.metadata.name,
+          Item: {
+            id: cardId,
+            title: cardId.toString(),
+          },
+        }).promise();
+      }
+    });
+
+    it("should return results", async () => {
+      const res1 = await Card.hashTitleIndex.scan();
+      const res2 = await Card.hashTitleIndex.scan({ limit: 2 });
+      const res3 = await Card.hashTitleIndex.scan({ limit: 2, exclusiveStartKey: res2.lastEvaluatedKey });
+
+      expect(res1.records.map((r) => r.id)).to.have.all.members(cardIds);
+      expect(cardIds).to.include.members(res2.records.map((r) => r.id));
+      expect(cardIds).to.include.members(res3.records.map((r) => r.id));
+    });
+  });
 });
 
 describe("FullGlobalSecondaryIndex", () => {
@@ -117,6 +143,32 @@ describe("FullGlobalSecondaryIndex", () => {
 
       expect(res.records[0].id).to.eq(13);
       expect(res.records[1].id).to.eq(12);
+    });
+  });
+
+  describe("#scan", async () => {
+    const cardIds = [111, 222, 333, 444, 555];
+
+    beforeEach(async () => {
+      for (const cardId of cardIds) {
+        await Card.metadata.connection.documentClient.put({
+          TableName: Card.metadata.name,
+          Item: {
+            id: cardId,
+            title: cardId.toString(),
+          },
+        }).promise();
+      }
+    });
+
+    it("should return results", async () => {
+      const res1 = await Card.fullTitleIndex.scan();
+      const res2 = await Card.fullTitleIndex.scan({ limit: 2 });
+      const res3 = await Card.fullTitleIndex.scan({ limit: 2, exclusiveStartKey: res2.lastEvaluatedKey });
+
+      expect(res1.records.map((r) => r.id)).to.have.all.members(cardIds);
+      expect(cardIds).to.include.members(res2.records.map((r) => r.id));
+      expect(cardIds).to.include.members(res3.records.map((r) => r.id));
     });
   });
 });
