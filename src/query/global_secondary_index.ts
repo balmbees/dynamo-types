@@ -131,5 +131,33 @@ export class HashGlobalSecondaryIndex<T extends Table, HashKeyType> {
       consumedCapacity: result.ConsumedCapacity,
     };
   }
+
+  public async scan(options: {
+    limit?: number,
+    totalSegments?: number,
+    segment?: number,
+    exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+  } = {}) {
+    const params: DynamoDB.DocumentClient.ScanInput = {
+      TableName: this.tableClass.metadata.name,
+      Limit: options.limit,
+      ExclusiveStartKey: options.exclusiveStartKey,
+      ReturnConsumedCapacity: "TOTAL",
+      TotalSegments: options.totalSegments,
+      Segment: options.segment,
+    };
+
+    const result = await this.tableClass.metadata.connection.documentClient.scan(params).promise();
+
+    return {
+      records: (result.Items || []).map((item) => {
+        return Codec.deserialize(this.tableClass, item);
+      }),
+      count: result.Count,
+      scannedCount: result.ScannedCount,
+      lastEvaluatedKey: result.LastEvaluatedKey,
+      consumedCapacity: result.ConsumedCapacity,
+    };
+  }
 }
 // tslint:enable:max-classes-per-file
