@@ -3,6 +3,7 @@ import * as Metadata from "./metadata";
 import * as Query from "./query";
 
 import * as _ from "lodash";
+import { Conditions  } from "./query/expressions/conditions";
 
 export class Table {
   // This will be setted by Decorator
@@ -50,11 +51,19 @@ export class Table {
     }
     return this.__writer;
   }
-  public async save() {
-    return await this.writer.put(this);
+  public async save(
+    options?: Partial<{
+      condition?: Conditions<Table> | Array<Conditions<Table>>;
+    }>,
+  ) {
+    return await this.writer.put(this, options);
   }
-  public async delete() {
-    return await this.writer.delete(this);
+  public async delete(
+    options?: Partial<{
+      condition?: Conditions<Table> | Array<Conditions<Table>>;
+    }>,
+  ) {
+    return await this.writer.delete(this, options);
   }
   public serialize() {
     // TODO some serialization logic

@@ -6,12 +6,10 @@ import { ITable, Table } from "../table";
 
 import { batchGetFull, batchGetTrim } from "./batch_get";
 import { batchWrite } from "./batch_write";
-import * as Scan from "./scan";
 
-const HASH_KEY_REF = "#hk";
-const HASH_VALUE_REF = ":hkv";
-
-const RANGE_KEY_REF = "#rk";
+import { Conditions } from "./expressions/conditions";
+import { buildCondition, buildUpdate } from "./expressions/transformers";
+import { UpdateChanges } from "./expressions/update";
 
 export class HashPrimaryKey<T extends Table, HashKeyType> {
   constructor(
@@ -19,12 +17,18 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     readonly metadata: Metadata.Indexes.HashPrimaryKeyMetadata,
   ) {}
 
-  public async delete(hashKey: HashKeyType) {
+  public async delete(
+    hashKey: HashKeyType,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
+  ) {
     const res = await this.tableClass.metadata.connection.documentClient.delete({
       TableName: this.tableClass.metadata.name,
       Key: {
         [this.metadata.hash.name]: hashKey,
       },
+      ...buildCondition(this.tableClass.metadata, options.condition),
     }).promise();
   }
 
@@ -128,25 +132,13 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
   // async scan()
   public async update(
     hashKey: HashKeyType,
-    changes: {
-      [key: string]: [
-        DynamoDB.DocumentClient.AttributeAction,
-        any,
-      ],
-    },
+    changes: Partial<UpdateChanges<T>>,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
   ): Promise<void> {
-    // Select out only declared Attributes
-    const attributeUpdates: DynamoDB.DocumentClient.AttributeUpdates = {};
-
-    this.tableClass.metadata.attributes.forEach((attr) => {
-      const change = changes[attr.propertyName];
-      if (change) {
-        attributeUpdates[attr.name] = {
-          Action: change[0],
-          Value: change[1],
-        };
-      }
-    });
+    const update = buildUpdate(this.tableClass.metadata, changes);
+    const condition = buildCondition(this.tableClass.metadata, options.condition);
 
     const dynamoRecord =
       await this.tableClass.metadata.connection.documentClient.update({
@@ -154,7 +146,10 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
         Key: {
           [this.metadata.hash.name]: hashKey,
         },
-        AttributeUpdates: attributeUpdates,
+        UpdateExpression: update.UpdateExpression,
+        ConditionExpression: condition.ConditionExpression,
+        ExpressionAttributeNames: { ...update.ExpressionAttributeNames, ...condition.ExpressionAttributeNames },
+        ExpressionAttributeValues: { ...update.ExpressionAttributeValues, ...condition.ExpressionAttributeValues },
       }).promise();
   }
 }

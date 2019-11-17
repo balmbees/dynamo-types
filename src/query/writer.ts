@@ -7,15 +7,24 @@ import * as Codec from "../codec";
 import * as Metadata from "../metadata";
 import { batchWrite } from "./batch_write";
 
+import { Conditions } from "./expressions/conditions";
+import { buildCondition } from "./expressions/transformers";
+
 export class Writer<T extends Table> {
   constructor(private tableClass: ITable<T>) {
   }
 
-  public async put(record: T) {
+  public async put(
+    record: T,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
+  ) {
     try {
       const res = await this.tableClass.metadata.connection.documentClient.put({
         TableName: this.tableClass.metadata.name,
         Item: Codec.serialize(this.tableClass, record),
+        ...buildCondition(this.tableClass.metadata, options.condition),
       }).promise();
 
       record.setAttributes(res.Attributes || {});
@@ -41,10 +50,16 @@ export class Writer<T extends Table> {
     );
   }
 
-  public async delete(record: T) {
+  public async delete(
+    record: T,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
+  ) {
     await this.tableClass.metadata.connection.documentClient.delete({
       TableName: this.tableClass.metadata.name,
       Key: KeyFromRecord(record, this.tableClass.metadata.primaryKey),
+      ...buildCondition(this.tableClass.metadata, options.condition),
     }).promise();
   }
 }

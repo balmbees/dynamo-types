@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import * as faker from "faker";
-
 import * as _ from "lodash";
+import { toJS } from "../../__test__/helper";
 
 import * as Metadata from "../../metadata";
 import { Table } from "../../table";
@@ -14,6 +14,7 @@ import {
   Table as TableDecorator,
 } from "../../decorator";
 
+import { AttributeExists, Between,  In } from "../expressions/conditions";
 import * as Query from "../index";
 
 describe("HashPrimaryKey", () => {
@@ -48,7 +49,7 @@ describe("HashPrimaryKey", () => {
   });
 
   describe("#delete", async () => {
-    it("should delete item if exist", async () => {
+    beforeEach(async () => {
       await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
@@ -56,8 +57,38 @@ describe("HashPrimaryKey", () => {
           title: "abc",
         },
       }).promise();
+    });
 
+    it("should delete item if exist", async () => {
       await primaryKey.delete(10);
+    });
+
+    context("when condition check was failed", () => {
+      it("should throw error", async () => {
+        const [ e ] = await toJS(primaryKey.delete(10, {
+          condition: { count: AttributeExists() },
+        }));
+
+        expect(e).to.be.instanceOf(Error)
+          .with.property("name", "ConditionalCheckFailedException");
+
+        expect(e).to.have.property("message", "The conditional request failed");
+
+        expect(await primaryKey.get(10)).not.to.eq(null);
+      });
+    });
+
+    context("when condition check was passed", () => {
+      it("should delete item as per provided condition", async () => {
+        await primaryKey.delete(10, {
+          condition: [
+            { id: In([5, 10, 15]) },
+            { count: AttributeExists() },
+          ],
+        });
+
+        expect(await primaryKey.get(10)).to.eq(null);
+      });
     });
   });
 
@@ -109,6 +140,57 @@ describe("HashPrimaryKey", () => {
 
       // it should keep the order
       expect(result1.map((c) => c.id)).to.deep.eq(cards.map((c) => c.id));
+    });
+  });
+
+  describe("#update", () => {
+    it("should be able to update items", async () => {
+      await primaryKey.update(10, { count: ["ADD", 1] });
+
+      let card = await primaryKey.get(10);
+      expect(card!.count).to.eq(1);
+
+      await primaryKey.update(10, { count: ["ADD", 2] });
+
+      card = await primaryKey.get(10);
+      expect(card!.count).to.eq(3);
+    });
+
+    context("when condition check was failed", () => {
+      it("should throw error", async () => {
+        const [ e ] = await toJS(primaryKey.update(10, {
+          count: ["ADD", 1],
+        }, {
+          condition: { id: AttributeExists() },
+        }));
+
+        expect(e).to.be.instanceOf(Error)
+          .with.property("name", "ConditionalCheckFailedException");
+
+        expect(e).to.have.property("message", "The conditional request failed");
+      });
+    });
+
+    context("when condition check was passed", () => {
+      beforeEach(async () => {
+        const card = new Card();
+        card.id = 22;
+        card.count = 33;
+        await card.save();
+      });
+
+      it("should update item as per provided condition", async () => {
+        await primaryKey.update(22, {
+          count: ["PUT", 123],
+        }, {
+          condition: [
+            { count:  Between(0, 100) },
+          ],
+        });
+
+        const card = await primaryKey.get(22);
+        expect(card).to.have.property("count", 123);
+      });
     });
   });
 });
