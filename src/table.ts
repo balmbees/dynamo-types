@@ -51,16 +51,18 @@ export class Table {
     }
     return this.__writer;
   }
-  public async save(
+  public async save<T extends Table>(
+    this: T,
     options?: Partial<{
-      condition?: Conditions<Table> | Array<Conditions<Table>>;
+      condition?: Conditions<T> | Array<Conditions<T>>;
     }>,
   ) {
     return await this.writer.put(this, options);
   }
-  public async delete(
+  public async delete<T extends Table>(
+    this: T,
     options?: Partial<{
-      condition?: Conditions<Table> | Array<Conditions<Table>>;
+      condition?: Conditions<T> | Array<Conditions<T>>;
     }>,
   ) {
     return await this.writer.delete(this, options);
