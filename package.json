@@ -28,22 +28,22 @@
   },
   "homepage": "https://github.com/balmbees/dynamo-types#readme",
   "devDependencies": {
-    "@types/chai": "4.2.5",
-    "@types/faker": "4.1.7",
-    "@types/lodash": "4.14.148",
+    "@types/chai": "4.2.9",
+    "@types/faker": "4.1.9",
+    "@types/lodash": "4.14.149",
     "@types/mocha": "5.2.7",
     "@types/node": "8.10.59",
     "@types/reflect-metadata": "0.1.0",
     "@vingle/commitlint-preset": "1.0.3",
-    "@vingle/semantic-release-config": "1.0.3",
+    "@vingle/semantic-release-config": "1.0.5",
     "@vingle/tslint-preset": "1.0.0",
     "chai": "4.2.0",
     "check-engine": "1.8.1",
     "faker": "4.1.0",
-    "husky": "3.0.9",
+    "husky": "3.1.0",
     "mocha": "6.2.2",
     "tslint": "5.20.1",
-    "typescript": "3.7.4"
+    "typescript": "3.7.5"
   },
   "dependencies": {
     "amazon-dax-client": "^1.2.2",

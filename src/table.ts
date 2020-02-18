@@ -1,9 +1,8 @@
-// Base Table
+import * as _ from "lodash";
+
 import * as Metadata from "./metadata";
 import * as Query from "./query";
-
-import * as _ from "lodash";
-import { Conditions  } from "./query/expressions/conditions";
+import { Conditions } from "./query/expressions/conditions";
 
 export class Table {
   // This will be setted by Decorator
