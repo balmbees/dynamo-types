@@ -1,8 +1,8 @@
-// Base Table
+import * as _ from "lodash";
+
 import * as Metadata from "./metadata";
 import * as Query from "./query";
-
-import * as _ from "lodash";
+import { Conditions } from "./query/expressions/conditions";
 
 export class Table {
   // This will be setted by Decorator
@@ -50,11 +50,21 @@ export class Table {
     }
     return this.__writer;
   }
-  public async save() {
-    return await this.writer.put(this);
+  public async save<T extends Table>(
+    this: T,
+    options?: Partial<{
+      condition?: Conditions<T> | Array<Conditions<T>>;
+    }>,
+  ) {
+    return await this.writer.put(this, options);
   }
-  public async delete() {
-    return await this.writer.delete(this);
+  public async delete<T extends Table>(
+    this: T,
+    options?: Partial<{
+      condition?: Conditions<T> | Array<Conditions<T>>;
+    }>,
+  ) {
+    return await this.writer.delete(this, options);
   }
   public serialize() {
     // TODO some serialization logic

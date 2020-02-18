@@ -8,6 +8,9 @@ import * as Query from "./query";
 
 import { batchGetFull, batchGetTrim } from "./batch_get";
 import { batchWrite } from "./batch_write";
+import { Conditions } from "./expressions/conditions";
+import { buildCondition, buildUpdate } from "./expressions/transformers";
+import { UpdateChanges } from "./expressions/update";
 
 const HASH_KEY_REF = "#hk";
 const HASH_VALUE_REF = ":hkv";
@@ -20,7 +23,13 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     readonly metadata: Metadata.Indexes.FullPrimaryKeyMetadata,
   ) {}
 
-  public async delete(hashKey: HashKeyType, sortKey: RangeKeyType) {
+  public async delete(
+    hashKey: HashKeyType,
+    sortKey: RangeKeyType,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
+  ) {
     const res = await this.tableClass.metadata.connection.documentClient.delete({
       TableName: this.tableClass.metadata.name,
       // ReturnValues: "ALL_OLD",
@@ -28,6 +37,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
         [this.metadata.hash.name]: hashKey,
         [this.metadata.range.name]: sortKey,
       },
+      ...buildCondition(this.tableClass.metadata, options.condition),
     }).promise();
   }
 
@@ -192,24 +202,13 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
   public async update(
     hashKey: HashKeyType,
     sortKey: RangeKeyType,
-    changes: Partial<{
-      [key: string]: [
-        DynamoDB.DocumentClient.AttributeAction,
-        any
-      ]
-    }>,
+    changes: Partial<UpdateChanges<T>>,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
   ): Promise<void> {
-    const attributeUpdates: DynamoDB.DocumentClient.AttributeUpdates = {};
-
-    this.tableClass.metadata.attributes.forEach((attr) => {
-      const change = changes[attr.propertyName];
-      if (change) {
-        attributeUpdates[attr.name] = {
-          Action: change[0],
-          Value: change[1],
-        };
-      }
-    });
+    const update = buildUpdate(this.tableClass.metadata, changes);
+    const condition = buildCondition(this.tableClass.metadata, options.condition);
 
     const dynamoRecord =
       await this.tableClass.metadata.connection.documentClient.update({
@@ -218,7 +217,10 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
           [this.metadata.hash.name]: hashKey,
           [this.metadata.range.name]: sortKey,
         },
-        AttributeUpdates: attributeUpdates,
+        UpdateExpression: update.UpdateExpression,
+        ConditionExpression: condition.ConditionExpression,
+        ExpressionAttributeNames: { ...update.ExpressionAttributeNames, ...condition.ExpressionAttributeNames },
+        ExpressionAttributeValues: { ...update.ExpressionAttributeValues, ...condition.ExpressionAttributeValues },
       }).promise();
   }
 }
