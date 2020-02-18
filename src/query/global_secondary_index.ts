@@ -76,6 +76,7 @@ export class FullGlobalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType
   } = {}) {
     const params: DynamoDB.DocumentClient.ScanInput = {
       TableName: this.tableClass.metadata.name,
+      IndexName: this.metadata.name,
       Limit: options.limit,
       ExclusiveStartKey: options.exclusiveStartKey,
       ReturnConsumedCapacity: "TOTAL",
@@ -140,6 +141,7 @@ export class HashGlobalSecondaryIndex<T extends Table, HashKeyType> {
   } = {}) {
     const params: DynamoDB.DocumentClient.ScanInput = {
       TableName: this.tableClass.metadata.name,
+      IndexName: this.metadata.name,
       Limit: options.limit,
       ExclusiveStartKey: options.exclusiveStartKey,
       ReturnConsumedCapacity: "TOTAL",
