@@ -14,7 +14,7 @@ class Card extends Table {
   @Decorator.HashGlobalSecondaryIndex("title")
   public static readonly hashTitleIndex: Query.HashGlobalSecondaryIndex<Card, string>;
 
-  @Decorator.FullGlobalSecondaryIndex("title", "id")
+  @Decorator.FullGlobalSecondaryIndex("title", "count")
   public static readonly fullTitleIndex: Query.FullGlobalSecondaryIndex<Card, string, number>;
 
   @Decorator.Attribute()
@@ -110,6 +110,7 @@ describe("FullGlobalSecondaryIndex", () => {
         Item: {
           id: 10,
           title: "abc",
+          count: 10,
         },
       }).promise();
       await Card.metadata.connection.documentClient.put({
@@ -117,6 +118,7 @@ describe("FullGlobalSecondaryIndex", () => {
         Item: {
           id: 11,
           title: "abd",
+          count: 11,
         },
       }).promise();
       await Card.metadata.connection.documentClient.put({
@@ -124,6 +126,7 @@ describe("FullGlobalSecondaryIndex", () => {
         Item: {
           id: 12,
           title: "abd",
+          count: 12,
         },
       }).promise();
       await Card.metadata.connection.documentClient.put({
@@ -131,6 +134,7 @@ describe("FullGlobalSecondaryIndex", () => {
         Item: {
           id: 13,
           title: "abd",
+          count: 13,
         },
       }).promise();
 
@@ -156,6 +160,8 @@ describe("FullGlobalSecondaryIndex", () => {
           Item: {
             id: cardId,
             title: cardId.toString(),
+            // only even items have "count",
+            count: cardId % 2 === 0 ? 1 : undefined
           },
         }).promise();
       }
@@ -166,7 +172,7 @@ describe("FullGlobalSecondaryIndex", () => {
       const res2 = await Card.fullTitleIndex.scan({ limit: 2 });
       const res3 = await Card.fullTitleIndex.scan({ limit: 2, exclusiveStartKey: res2.lastEvaluatedKey });
 
-      expect(res1.records.map((r) => r.id)).to.have.all.members(cardIds);
+      expect(res1.records.map((r) => r.id)).to.have.all.members([222, 444]);
       expect(cardIds).to.include.members(res2.records.map((r) => r.id));
       expect(cardIds).to.include.members(res3.records.map((r) => r.id));
     });
