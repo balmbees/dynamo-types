@@ -5,6 +5,7 @@ import {
   Query,
   Table,
 } from "../index";
+import { toJS } from "./helper";
 
 describe("Table", () => {
   @Decorator.Table({ name: `prod-Card${Math.random()}` })
@@ -68,5 +69,44 @@ describe("Table", () => {
 
     const reloaded = await Card.primaryKey.get(10, "100", { consistent: true });
     expect(reloaded).to.eq(null);
+  });
+
+  describe("Conditions", () => {
+    context("when condition check was failed", () => {
+      it("should throw error", async () => {
+        const card = new Card();
+        card.id = 22;
+        card.title = "foo";
+        await card.save();
+
+        const [ e ] = await toJS(card.save({
+          condition: {
+            id: Query.AttributeNotExists(),
+          },
+        }));
+
+        expect(e).to.be.instanceOf(Error)
+          .with.property("name", "ConditionalCheckFailedException");
+
+        expect(e).to.have.property("message", "The conditional request failed");
+      });
+    });
+
+    context("when condition check was passed", () => {
+      it("should put item as per provided condition", async () => {
+        const card = new Card();
+        card.id = 22;
+        card.title = "bar";
+
+        await card.save({
+          condition: {
+            id: Query.AttributeNotExists(),
+          },
+        });
+
+        const reloaded = Card.primaryKey.get(22, "bar", { consistent: true });
+        expect(reloaded).not.to.be.eq(null);
+      });
+    });
   });
 });

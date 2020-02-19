@@ -1,3 +1,15 @@
+# [2.9.0](https://github.com/balmbees/dynamo-types/compare/v2.8.0...v2.9.0) (2020-02-18)
+
+
+### Bug Fixes
+
+* **condition:** fix type inference in derived Table classes ([94a139f](https://github.com/balmbees/dynamo-types/commit/94a139f07b7302aeddcd914ae8fccfaf8f7425b9))
+
+
+### Features
+
+* support conditional put/update/delete operations ([6f93f7f](https://github.com/balmbees/dynamo-types/commit/6f93f7f786ceb95d27a2800a8cb629b994084232))
+
 # [2.8.0](https://github.com/balmbees/dynamo-types/compare/v2.7.1...v2.8.0) (2019-11-16)
 
 

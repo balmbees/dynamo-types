@@ -115,6 +115,17 @@ And most importantly, all of those queries regardless of whether it's from index
   // Delete record
   await card.delete()
 
+  // Delete record only when it meets condition.
+  // with this, you can avoid race condition such as somebody updating the record while you're trying to delete it
+  await card.delete({
+    condition: { title: Equal("Title") }
+  });
+  // when mismatch occurs, it raises "ConditionalCheckFailedException" error.
+
+  // Likewise, update record only when it meets condition
+  card.title = "New Title"
+  await card.save({ condition: { title: "Title" } });
+  // when mismatch occurs, it raises "ConditionalCheckFailedException" error.
 ```
 
 

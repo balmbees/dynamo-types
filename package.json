@@ -1,6 +1,6 @@
 {
   "name": "dynamo-types",
-  "version": "2.8.0",
+  "version": "2.9.0",
   "description": "DynamoDB ORM for Typescript",
   "main": "./dst/index.js",
   "typings": "./dst/index.d.ts",
@@ -28,10 +28,10 @@
   },
   "homepage": "https://github.com/balmbees/dynamo-types#readme",
   "devDependencies": {
-    "@types/chai": "4.2.8",
+    "@types/chai": "4.2.9",
     "@types/faker": "4.1.9",
     "@types/lodash": "4.14.149",
-    "@types/mocha": "5.2.7",
+    "@types/mocha": "7.0.1",
     "@types/node": "8.10.59",
     "@types/reflect-metadata": "0.1.0",
     "@vingle/commitlint-preset": "1.0.3",
@@ -39,10 +39,9 @@
     "@vingle/tslint-preset": "1.0.0",
     "chai": "4.2.0",
     "check-engine": "1.8.1",
-    "dynamo-local": "0.0.4",
     "faker": "4.1.0",
     "husky": "4.2.3",
-    "mocha": "6.2.2",
+    "mocha": "7.0.1",
     "tslint": "5.20.1",
     "typescript": "3.7.5"
   },
