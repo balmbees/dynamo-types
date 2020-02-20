@@ -123,10 +123,6 @@ export async function createTable(metadata: Metadata.Table.Metadata) {
               Projection: {
                 ProjectionType: "ALL",
               },
-              ProvisionedThroughput: {
-                ReadCapacityUnits: 1,
-                WriteCapacityUnits: 1,
-              },
             };
           } else {
             return {
@@ -138,17 +134,10 @@ export async function createTable(metadata: Metadata.Table.Metadata) {
               Projection: {
                 ProjectionType: "ALL",
               },
-              ProvisionedThroughput: {
-                ReadCapacityUnits: 1,
-                WriteCapacityUnits: 1,
-              },
             };
           }
         }) : undefined,
-    ProvisionedThroughput: {
-      ReadCapacityUnits: 1,
-      WriteCapacityUnits: 1,
-    },
+    BillingMode: "PAY_PER_REQUEST"
     // StreamSpecification?: StreamSpecification;
   };
 
