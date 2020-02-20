@@ -1,3 +1,10 @@
+## [2.9.1](https://github.com/balmbees/dynamo-types/compare/v2.9.0...v2.9.1) (2020-02-20)
+
+
+### Bug Fixes
+
+* **table:** create table with on-demand billing mode by default ([62c3498](https://github.com/balmbees/dynamo-types/commit/62c349874c870be9be417069bbe2173a621af675))
+
 # [2.9.0](https://github.com/balmbees/dynamo-types/compare/v2.8.0...v2.9.0) (2020-02-18)
 
 
