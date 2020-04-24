@@ -156,6 +156,17 @@ describe("HashPrimaryKey", () => {
       expect(card!.count).to.eq(3);
     });
 
+    it("should return item", async () => {
+      const card = await primaryKey.update(10, {
+        count: ["ADD", 1],
+        title: ["PUT", "yoyo"],
+      });
+
+      expect(card).to.be.instanceOf(Card);
+      expect(card).to.have.property("count", 1);
+      expect(card).to.have.property("title", "yoyo");
+    });
+
     context("when condition check was failed", () => {
       it("should throw error", async () => {
         const [ e ] = await toJS(primaryKey.update(10, {

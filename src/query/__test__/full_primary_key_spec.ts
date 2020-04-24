@@ -255,6 +255,26 @@ describe("FullPrimaryKey", () => {
       expect(card!.count).to.eq(3);
     });
 
+    it("should return item", async () => {
+      const first = await primaryKey.update(10, "abc", {
+        count: ["PUT", 0],
+      });
+
+      expect(first)
+        .to.be.instanceOf(Card)
+        .and
+        .to.have.property("count", 0);
+
+      const second = await primaryKey.update(10, "abc", {
+        count: ["ADD", 1],
+      });
+
+      expect(second)
+        .to.be.instanceOf(Card)
+        .and
+        .to.have.property("count", 1);
+    });
+
     context("when condition check was failed", () => {
       it("should throw error", async () => {
         const [ e ] = await toJS(primaryKey.update(10, "abc", {

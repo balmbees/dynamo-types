@@ -136,7 +136,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     options: Partial<{
       condition: Conditions<T> | Array<Conditions<T>>;
     }> = {},
-  ): Promise<void> {
+  ): Promise<T> {
     const update = buildUpdate(this.tableClass.metadata, changes);
     const condition = buildCondition(this.tableClass.metadata, options.condition);
 
@@ -150,6 +150,9 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
         ConditionExpression: condition.ConditionExpression,
         ExpressionAttributeNames: { ...update.ExpressionAttributeNames, ...condition.ExpressionAttributeNames },
         ExpressionAttributeValues: { ...update.ExpressionAttributeValues, ...condition.ExpressionAttributeValues },
+        ReturnValues: "ALL_NEW",
       }).promise();
+
+    return Codec.deserialize(this.tableClass, dynamoRecord.Attributes!);
   }
 }
