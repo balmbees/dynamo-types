@@ -10,7 +10,7 @@ export class DAXConnection implements Connection {
   private __client: AWS.DynamoDB; // tslint:disable-line
 
   constructor(options: {
-    region?: string | undefined;
+    region?: string;
     endpoints: string[];
     requestTimeout?: number;
   }) {
