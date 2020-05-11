@@ -1,3 +1,10 @@
+# [2.10.0](https://github.com/balmbees/dynamo-types/compare/v2.9.1...v2.10.0) (2020-05-11)
+
+
+### Features
+
+* add region param ([64ec37f](https://github.com/balmbees/dynamo-types/commit/64ec37f0f4a11c2dffe6eab280166b4c8d21b8f2))
+
 ## [2.9.1](https://github.com/balmbees/dynamo-types/compare/v2.9.0...v2.9.1) (2020-02-20)
 
 
