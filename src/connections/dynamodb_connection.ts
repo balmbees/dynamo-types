@@ -11,10 +11,12 @@ export class DynamoDBConnection implements Connection {
   private __client: AWS.DynamoDB; // tslint:disable-line
 
   constructor(options: {
-    endpoint: string | undefined,
-    enableAWSXray: boolean,
+    region?: string;
+    endpoint: string | undefined;
+    enableAWSXray: boolean;
   }) {
-    const dynamoDBOptions = {
+    const dynamoDBOptions: DynamoDB.ClientConfiguration = {
+      region: options.region,
       endpoint: options.endpoint,
       httpOptions: {
         agent: this.httpAgent(options.endpoint),

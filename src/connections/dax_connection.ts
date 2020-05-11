@@ -10,14 +10,18 @@ export class DAXConnection implements Connection {
   private __client: AWS.DynamoDB; // tslint:disable-line
 
   constructor(options: {
-    endpoints: string[],
-    requestTimeout?: number,
+    region?: string;
+    endpoints: string[];
+    requestTimeout?: number;
   }) {
     this.__client = new AmazonDaxClient({
+      region: options.region,
       endpoints: options.endpoints,
       requestTimeout: options.requestTimeout,
     });
-    this.__documentClient = new DynamoDB.DocumentClient({ service: this.__client });
+    this.__documentClient = new DynamoDB.DocumentClient({
+      service: this.__client,
+    });
   }
 
   public get documentClient() {
