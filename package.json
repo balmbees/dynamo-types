@@ -41,7 +41,7 @@
     "check-engine": "1.8.1",
     "faker": "4.1.0",
     "husky": "4.2.5",
-    "mocha": "7.1.1",
+    "mocha": "7.2.0",
     "tslint": "5.20.1",
     "typescript": "3.8.3"
   },
