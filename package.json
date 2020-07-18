@@ -36,7 +36,7 @@
     "@types/reflect-metadata": "0.1.0",
     "@vingle/commitlint-preset": "1.0.3",
     "@vingle/semantic-release-config": "1.0.5",
-    "@vingle/tslint-preset": "1.0.1",
+    "@vingle/tslint-preset": "2.0.0",
     "chai": "4.2.0",
     "check-engine": "1.8.1",
     "faker": "4.1.0",
