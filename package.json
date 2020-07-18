@@ -35,7 +35,7 @@
     "@types/node": "8.10.61",
     "@types/reflect-metadata": "0.1.0",
     "@vingle/commitlint-preset": "1.0.3",
-    "@vingle/semantic-release-config": "1.0.5",
+    "@vingle/semantic-release-config": "2.0.0",
     "@vingle/tslint-preset": "1.0.1",
     "chai": "4.2.0",
     "check-engine": "1.8.1",
