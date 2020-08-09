@@ -48,7 +48,7 @@
   "dependencies": {
     "amazon-dax-client": "^1.2.2",
     "aws-sdk": "^2.538.0",
-    "aws-xray-sdk-core": "^2.3.6",
+    "aws-xray-sdk-core": "^3.0.0",
     "lodash": "^4.17.15",
     "reflect-metadata": "^0.1.13"
   },
