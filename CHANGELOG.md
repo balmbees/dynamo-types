@@ -1,3 +1,10 @@
+## [2.10.1](https://github.com/balmbees/dynamo-types/compare/v2.10.0...v2.10.1) (2020-08-23)
+
+
+### Bug Fixes
+
+* **deps:** update dependency lodash to v4.17.19 [security] ([e221e6d](https://github.com/balmbees/dynamo-types/commit/e221e6d08ebe466f19fd60117f33fda1a2205d2c))
+
 # [2.10.0](https://github.com/balmbees/dynamo-types/compare/v2.9.1...v2.10.0) (2020-05-11)
 
 
