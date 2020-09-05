@@ -32,7 +32,7 @@
     "@types/faker": "4.1.12",
     "@types/lodash": "4.14.161",
     "@types/mocha": "7.0.2",
-    "@types/node": "8.10.62",
+    "@types/node": "8.10.63",
     "@types/reflect-metadata": "0.1.0",
     "@vingle/commitlint-preset": "1.0.3",
     "@vingle/semantic-release-config": "1.0.5",
