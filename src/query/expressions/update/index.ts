@@ -1,10 +1,20 @@
-// TODO: Implement own Action classes
+import { NumberSet, StringSet } from "../../../metadata/attribute";
 
-export type UpdateAction = "ADD" | "PUT" | "DELETE";
+// TODO: Implement own Action classes
+export type UpdateAction = UpdateActionNormal | UpdateActionList | UpdateActionRemove;
+
+export type UpdateActionNormal = "PUT" | "DELETE" | "ADD";
+export type UpdateActionList = "APPEND";
+export type UpdateActionRemove = "REMOVE";
 
 export type UpdateChanges<T> = {
   [P in keyof T]?: [
-    UpdateAction,
+    UpdateActionNormal,
     T[P]
+  ] | [
+    UpdateActionList,
+    T[P] extends Array<infer E> ? T[P] : never
+  ] | [
+    UpdateActionRemove
   ]
 };

@@ -8,8 +8,7 @@
     "prebuild": "check-engine && rm -rf dst",
     "build": "tsc",
     "postbuild": "cd src && find . -name '*.json' -type f -exec cp {} ../dst/{} \\; && cd ..",
-    "pretest": "npm run build -- -p ./tsconfig.test.json",
-    "test": "env AWS_REGION=us-east-1 AWS_ACCESS_KEY_ID=mock AWS_SECRET_ACCESS_KEY=mock mocha -t 20000 dst/**/__test__/**/*.js",
+    "test": "env AWS_REGION=us-east-1 AWS_ACCESS_KEY_ID=mock AWS_SECRET_ACCESS_KEY=moc mocha -r ./node_modules/ts-node/register --exit -t 20000 src/**/__test__/**/*.ts",
     "test:local": "env DYNAMO_TYPES_ENDPOINT=http://127.0.0.1:8000 npm test",
     "prepublishOnly": "npm run build",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
@@ -42,6 +41,7 @@
     "faker": "4.1.0",
     "husky": "4.3.0",
     "mocha": "7.2.0",
+    "ts-node": "^9.0.0",
     "tslint": "5.20.1",
     "typescript": "3.9.7"
   },

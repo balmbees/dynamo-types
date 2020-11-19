@@ -23,6 +23,10 @@ export function parse(v: DynamoDB.AttributeValue) {
     return { value: Number(v.N), type: Attribute.Type.Number };
   } else if (v.S !== undefined) {
     return { value: v.S, type: Attribute.Type.String };
+  } else if (v.SS !== undefined) {
+    return { value: v.SS, type: Attribute.Type.StringSet };
+  } else if (v.NS !== undefined) {
+    return { value: v.NS, type: Attribute.Type.NumberSet };
   } else if (v.NULL !== undefined) {
     return { value: null, type: Attribute.Type.Null };
   } else {

@@ -9,6 +9,32 @@ export const enum Type {
   // StringArray = "SS",
   Array = "L",
   Map = "M",
+  StringSet = "SS",
+  NumberSet = "NS",
+}
+
+export class StringSet extends Set<string> {
+  public toJSON() {
+    return {
+      [Type.StringSet]: Array.from(this)
+    };
+  }
+
+  public toArray() {
+    return Array.from(this);
+  }
+}
+// tslint:disable-next-line: max-classes-per-file
+export class NumberSet extends Set<number> {
+  public toJSON() {
+    return {
+      [Type.NumberSet]: Array.from(this).map((value) => value.toString())
+    };
+  }
+
+  public toArray() {
+    return Array.from(this);
+  }
 }
 
 export interface Metadata {

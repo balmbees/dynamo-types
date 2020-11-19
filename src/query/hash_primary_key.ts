@@ -1,5 +1,6 @@
 import { DynamoDB } from "aws-sdk";
 
+import * as _ from "lodash";
 import * as Codec from "../codec";
 import * as Metadata from "../metadata";
 import { ITable, Table } from "../table";
@@ -140,6 +141,9 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     const update = buildUpdate(this.tableClass.metadata, changes);
     const condition = buildCondition(this.tableClass.metadata, options.condition);
 
+    const attributeNames = { ...update.ExpressionAttributeNames, ...condition.ExpressionAttributeNames };
+    const attributeValues = { ...update.ExpressionAttributeValues, ...condition.ExpressionAttributeValues };
+
     const dynamoRecord =
       await this.tableClass.metadata.connection.documentClient.update({
         TableName: this.tableClass.metadata.name,
@@ -148,8 +152,8 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
         },
         UpdateExpression: update.UpdateExpression,
         ConditionExpression: condition.ConditionExpression,
-        ExpressionAttributeNames: { ...update.ExpressionAttributeNames, ...condition.ExpressionAttributeNames },
-        ExpressionAttributeValues: { ...update.ExpressionAttributeValues, ...condition.ExpressionAttributeValues },
+        ExpressionAttributeNames: _.isEmpty(attributeNames) ? undefined : attributeNames,
+        ExpressionAttributeValues: _.isEmpty(attributeValues) ? undefined : attributeValues,
       }).promise();
   }
 }
