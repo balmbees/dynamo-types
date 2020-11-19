@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+import { TransactionWrite } from ".";
 import * as Metadata from "./metadata";
 import { NumberSet, StringSet, Type } from "./metadata/attribute";
 import * as Query from "./query";
@@ -81,6 +82,19 @@ export class Table {
   ) {
     return await this.writer.put(this, options);
   }
+  public transactionSave<T extends Table>(
+    this: T,
+    transaction: TransactionWrite,
+    options?: Partial<{
+      condition?: Conditions<T> | Array<Conditions<T>>;
+    }>,
+
+  ) {
+    const operation = this.writer.buildPutOperation(this, options);
+    transaction.put(operation);
+    return transaction;
+  }
+
   public async delete<T extends Table>(
     this: T,
     options?: Partial<{
@@ -89,6 +103,20 @@ export class Table {
   ) {
     return await this.writer.delete(this, options);
   }
+
+  public async transactionDelete<T extends Table>(
+    this: T,
+    transaction: TransactionWrite,
+    options?: Partial<{
+      condition?: Conditions<T> | Array<Conditions<T>>;
+    }>,
+  ) {
+    const operation = this.writer.buildDeleteOperation(this, options);
+    transaction.delete(operation);
+
+    return transaction;
+  }
+
   public serialize() {
     // TODO some serialization logic
     return this.__attributes;
