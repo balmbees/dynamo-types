@@ -38,7 +38,7 @@
     "@vingle/semantic-release-config": "1.0.5",
     "@vingle/tslint-preset": "1.0.1",
     "chai": "4.2.0",
-    "check-engine": "1.8.1",
+    "check-engine": "1.10.0",
     "faker": "4.1.0",
     "husky": "4.3.0",
     "mocha": "7.2.0",
