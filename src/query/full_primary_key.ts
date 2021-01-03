@@ -2,10 +2,12 @@ import { DynamoDB } from "aws-sdk";
 
 import { ITable, Table } from "../table";
 
+import * as _ from "lodash";
 import * as Codec from "../codec";
 import * as Metadata from "../metadata";
 import * as Query from "./query";
 
+import { TransactionWrite } from "..";
 import { batchGetFull, batchGetTrim } from "./batch_get";
 import { batchWrite } from "./batch_write";
 import { Conditions } from "./expressions/conditions";
@@ -23,14 +25,14 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     readonly metadata: Metadata.Indexes.FullPrimaryKeyMetadata,
   ) {}
 
-  public async delete(
+  public buildDeleteOperation(
     hashKey: HashKeyType,
     sortKey: RangeKeyType,
     options: Partial<{
       condition: Conditions<T> | Array<Conditions<T>>;
     }> = {},
   ) {
-    const res = await this.tableClass.metadata.connection.documentClient.delete({
+    return {
       TableName: this.tableClass.metadata.name,
       // ReturnValues: "ALL_OLD",
       Key: {
@@ -38,7 +40,33 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
         [this.metadata.range.name]: sortKey,
       },
       ...buildCondition(this.tableClass.metadata, options.condition),
-    }).promise();
+    };
+  }
+
+  public async delete(
+    hashKey: HashKeyType,
+    sortKey: RangeKeyType,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
+  ) {
+    await this.tableClass.metadata.connection.documentClient.delete(
+      this.buildDeleteOperation(hashKey, sortKey, options)
+    ).promise();
+  }
+
+  public transactionDelete(
+    transaction: TransactionWrite,
+    hashKey: HashKeyType,
+    sortKey: RangeKeyType,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
+  ) {
+    const operation = this.buildDeleteOperation(hashKey, sortKey, options);
+    transaction.delete(operation);
+
+    return transaction;
   }
 
   /**
@@ -199,6 +227,33 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     };
   }
 
+  public buildUpdateOperation(
+    hashKey: HashKeyType,
+    sortKey: RangeKeyType,
+    changes: Partial<UpdateChanges<T>>,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
+  ) {
+    const update = buildUpdate(this.tableClass.metadata, changes);
+    const condition = buildCondition(this.tableClass.metadata, options.condition);
+
+    const attributeNames = { ...update.ExpressionAttributeNames, ...condition.ExpressionAttributeNames };
+    const attributeValues = { ...update.ExpressionAttributeValues, ...condition.ExpressionAttributeValues };
+
+    return {
+      TableName: this.tableClass.metadata.name,
+      Key: {
+        [this.metadata.hash.name]: hashKey,
+        [this.metadata.range.name]: sortKey,
+      },
+      UpdateExpression: update.UpdateExpression,
+      ConditionExpression: condition.ConditionExpression,
+      ExpressionAttributeNames: _.isEmpty(attributeNames) ? undefined : attributeNames,
+      ExpressionAttributeValues: _.isEmpty(attributeValues) ? undefined : attributeValues,
+    };
+  }
+
   public async update(
     hashKey: HashKeyType,
     sortKey: RangeKeyType,
@@ -207,20 +262,23 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
       condition: Conditions<T> | Array<Conditions<T>>;
     }> = {},
   ): Promise<void> {
-    const update = buildUpdate(this.tableClass.metadata, changes);
-    const condition = buildCondition(this.tableClass.metadata, options.condition);
 
-    const dynamoRecord =
-      await this.tableClass.metadata.connection.documentClient.update({
-        TableName: this.tableClass.metadata.name,
-        Key: {
-          [this.metadata.hash.name]: hashKey,
-          [this.metadata.range.name]: sortKey,
-        },
-        UpdateExpression: update.UpdateExpression,
-        ConditionExpression: condition.ConditionExpression,
-        ExpressionAttributeNames: { ...update.ExpressionAttributeNames, ...condition.ExpressionAttributeNames },
-        ExpressionAttributeValues: { ...update.ExpressionAttributeValues, ...condition.ExpressionAttributeValues },
-      }).promise();
+    await this.tableClass.metadata.connection.documentClient.update(
+      this.buildUpdateOperation(hashKey, sortKey, changes, options)
+    ).promise();
+  }
+
+  public transactionUpdate(
+    transaction: TransactionWrite,
+    hashKey: HashKeyType,
+    sortKey: RangeKeyType,
+    changes: Partial<UpdateChanges<T>>,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
+  ): TransactionWrite {
+    const operation = this.buildUpdateOperation(hashKey, sortKey, changes, options);
+    transaction.update(operation);
+    return transaction;
   }
 }

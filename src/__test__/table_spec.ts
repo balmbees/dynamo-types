@@ -5,6 +5,7 @@ import {
   Query,
   Table,
 } from "../index";
+import { NumberSet, StringSet } from "../metadata/attribute";
 import { toJS } from "./helper";
 
 describe("Table", () => {
@@ -24,6 +25,12 @@ describe("Table", () => {
 
     @Decorator.Attribute()
     public title: string;
+
+    @Decorator.Attribute()
+    public followers: StringSet;
+
+    @Decorator.Attribute()
+    public tags: NumberSet;
 
     @Decorator.Attribute({ timeToLive: true })
     public expiresAt: number;
@@ -48,6 +55,8 @@ describe("Table", () => {
     const card = new Card();
     card.id = 10;
     card.title = "100";
+    card.followers = new StringSet(["U1", "U2", "U3"]);
+    card.tags = new NumberSet([1, 2, 3]);
 
     await card.save();
 
@@ -55,6 +64,10 @@ describe("Table", () => {
     expect(reloadedCard).to.be.instanceof(Card);
     expect(reloadedCard!.id).to.eq(10);
     expect(reloadedCard!.title).to.eq("100");
+    expect(reloadedCard!.followers).to.be.instanceOf(StringSet);
+    expect(reloadedCard!.followers.toArray()).to.be.deep.eq(["U1", "U2", "U3"]);
+    expect(reloadedCard!.tags).to.be.instanceOf(NumberSet);
+    expect(reloadedCard!.tags.toArray()).to.be.deep.eq([1, 2, 3]);
   });
 
   it("should works with TTL", async () => {

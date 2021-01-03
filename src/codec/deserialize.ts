@@ -16,6 +16,7 @@ export function deserialize<T extends Table>(
 
   tableClass.metadata.attributes.forEach((attributeMetadata) => {
     const attributeValue = dynamoAttributes[attributeMetadata.name];
+
     if (!dynamoAttributes.hasOwnProperty(attributeMetadata.name)) {
       // attribute is defined but not provided by DynamoDB
       // raise error but maybe later?

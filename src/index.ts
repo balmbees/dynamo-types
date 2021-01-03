@@ -7,6 +7,7 @@ import * as Decorator from "./decorator";
 import * as Metadata from "./metadata";
 import * as Query from "./query";
 import { Table } from "./table";
+import { TransactionWrite } from "./transaction";
 
 export {
   Query,
@@ -16,4 +17,6 @@ export {
   Metadata,
   Connection,
   Table,
+  TransactionWrite,
+
 };

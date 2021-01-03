@@ -1,5 +1,7 @@
 import { DynamoDB } from "aws-sdk";
 
+import * as _ from "lodash";
+import { TransactionWrite } from "..";
 import * as Codec from "../codec";
 import * as Metadata from "../metadata";
 import { ITable, Table } from "../table";
@@ -17,19 +19,43 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     readonly metadata: Metadata.Indexes.HashPrimaryKeyMetadata,
   ) {}
 
+  public buildDeleteOperation(
+    hashKey: HashKeyType,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
+  ) {
+    return {
+      TableName: this.tableClass.metadata.name,
+      Key: {
+        [this.metadata.hash.name]: hashKey,
+      },
+      ...buildCondition(this.tableClass.metadata, options.condition),
+    };
+  }
+
   public async delete(
     hashKey: HashKeyType,
     options: Partial<{
       condition: Conditions<T> | Array<Conditions<T>>;
     }> = {},
   ) {
-    const res = await this.tableClass.metadata.connection.documentClient.delete({
-      TableName: this.tableClass.metadata.name,
-      Key: {
-        [this.metadata.hash.name]: hashKey,
-      },
-      ...buildCondition(this.tableClass.metadata, options.condition),
-    }).promise();
+    await this.tableClass.metadata.connection.documentClient.delete(
+      this.buildDeleteOperation(hashKey, options)
+    ).promise();
+  }
+
+  public transactionDelete(
+    transaction: TransactionWrite,
+    hashKey: HashKeyType,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
+  ) {
+    const operation = this.buildDeleteOperation(hashKey, options);
+    transaction.delete(operation);
+
+    return transaction;
   }
 
   public async get(hashKey: HashKeyType, options: { consistent: boolean } = { consistent: false }): Promise<T | null> {
@@ -128,8 +154,31 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     );
   }
 
-  // Let'just don't use Scan if it's possible
-  // async scan()
+  public buildUpdateOperation(
+    hashKey: HashKeyType,
+    changes: Partial<UpdateChanges<T>>,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
+  ) {
+    const update = buildUpdate(this.tableClass.metadata, changes);
+    const condition = buildCondition(this.tableClass.metadata, options.condition);
+
+    const attributeNames = { ...update.ExpressionAttributeNames, ...condition.ExpressionAttributeNames };
+    const attributeValues = { ...update.ExpressionAttributeValues, ...condition.ExpressionAttributeValues };
+
+    return {
+      TableName: this.tableClass.metadata.name,
+      Key: {
+        [this.metadata.hash.name]: hashKey,
+      },
+      UpdateExpression: update.UpdateExpression,
+      ConditionExpression: condition.ConditionExpression,
+      ExpressionAttributeNames: _.isEmpty(attributeNames) ? undefined : attributeNames,
+      ExpressionAttributeValues: _.isEmpty(attributeValues) ? undefined : attributeValues,
+    };
+  }
+
   public async update(
     hashKey: HashKeyType,
     changes: Partial<UpdateChanges<T>>,
@@ -137,19 +186,24 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
       condition: Conditions<T> | Array<Conditions<T>>;
     }> = {},
   ): Promise<void> {
-    const update = buildUpdate(this.tableClass.metadata, changes);
-    const condition = buildCondition(this.tableClass.metadata, options.condition);
 
-    const dynamoRecord =
-      await this.tableClass.metadata.connection.documentClient.update({
-        TableName: this.tableClass.metadata.name,
-        Key: {
-          [this.metadata.hash.name]: hashKey,
-        },
-        UpdateExpression: update.UpdateExpression,
-        ConditionExpression: condition.ConditionExpression,
-        ExpressionAttributeNames: { ...update.ExpressionAttributeNames, ...condition.ExpressionAttributeNames },
-        ExpressionAttributeValues: { ...update.ExpressionAttributeValues, ...condition.ExpressionAttributeValues },
-      }).promise();
+    await this.tableClass.metadata.connection.documentClient.update(
+      this.buildUpdateOperation(hashKey, changes, options)
+    ).promise();
   }
+
+  public async transactionUpdate(
+    transaction: TransactionWrite,
+    hashKey: HashKeyType,
+    changes: Partial<UpdateChanges<T>>,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
+  ) {
+    const operation = this.buildUpdateOperation(hashKey, changes, options);
+
+    transaction.update(operation);
+    return transaction;
+  }
+
 }

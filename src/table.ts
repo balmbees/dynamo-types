@@ -1,6 +1,7 @@
 import * as _ from "lodash";
-
+import { TransactionWrite } from ".";
 import * as Metadata from "./metadata";
+import { NumberSet, StringSet, Type } from "./metadata/attribute";
 import * as Query from "./query";
 import { Conditions } from "./query/expressions/conditions";
 
@@ -29,13 +30,36 @@ export class Table {
 
   private __writer: Query.Writer<Table>; // tslint:disable-line
 
-  public getAttribute(name: string) {
-    return this.__attributes[name];
+  public getAttribute(name: string, metadata?: Metadata.Table.Metadata) {
+    const value = this.__attributes[name];
+
+    if (metadata && (value instanceof NumberSet || value instanceof StringSet)) {
+      return metadata.connection.documentClient.createSet(value.toArray());
+    }
+
+    return value;
   }
 
   // Those are pretty much "Private". don't use it if its possible
   public setAttribute(name: string, value: any) {
     // Do validation with Attribute metadata maybe
+
+    if (typeof(value) === "object") {
+      const wrapperName = _.get(value, "wrapperName");
+      const type = _.get(value, "type");
+
+      if (wrapperName === "Set") {
+        switch (type) {
+          case "String":
+            this.__attributes[name] = new StringSet(_.get(value, "values"));
+            return;
+          case "Number":
+            this.__attributes[name] = new NumberSet(_.get(value, "values"));
+            return;
+        }
+      }
+    }
+
     this.__attributes[name] = value;
   }
 
@@ -58,6 +82,19 @@ export class Table {
   ) {
     return await this.writer.put(this, options);
   }
+  public transactionSave<T extends Table>(
+    this: T,
+    transaction: TransactionWrite,
+    options?: Partial<{
+      condition?: Conditions<T> | Array<Conditions<T>>;
+    }>,
+
+  ) {
+    const operation = this.writer.buildPutOperation(this, options);
+    transaction.put(operation);
+    return transaction;
+  }
+
   public async delete<T extends Table>(
     this: T,
     options?: Partial<{
@@ -66,6 +103,20 @@ export class Table {
   ) {
     return await this.writer.delete(this, options);
   }
+
+  public async transactionDelete<T extends Table>(
+    this: T,
+    transaction: TransactionWrite,
+    options?: Partial<{
+      condition?: Conditions<T> | Array<Conditions<T>>;
+    }>,
+  ) {
+    const operation = this.writer.buildDeleteOperation(this, options);
+    transaction.delete(operation);
+
+    return transaction;
+  }
+
   public serialize() {
     // TODO some serialization logic
     return this.__attributes;

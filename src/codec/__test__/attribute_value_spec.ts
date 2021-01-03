@@ -1,6 +1,7 @@
 import { expect } from "chai";
 
 import { Attribute } from "../../metadata";
+import { StringSet } from "../../metadata/attribute";
 import * as AttributeValue from "../attribute_value";
 
 describe("AttributeValue.parse", () => {
@@ -56,6 +57,36 @@ describe("AttributeValue.parse", () => {
         false,
       ],
     }, type: Attribute.Type.Map});
+  });
+
+  it("should parse string set", () => {
+    const beforeParse = {
+      SS: [
+        "test",
+        "string",
+        "set",
+      ],
+    };
+
+    const afterParse = AttributeValue.parse(beforeParse);
+
+    expect(afterParse.type).to.eq(Attribute.Type.StringSet);
+    expect(afterParse.value).to.be.deep.eq(["test", "string", "set"]);
+  });
+
+  it("should parse number set", () => {
+    const beforeParse = {
+      NS: [
+        "1",
+        "0.5",
+        "0.9",
+      ],
+    };
+
+    const afterParse = AttributeValue.parse(beforeParse);
+
+    expect(afterParse.type).to.eq(Attribute.Type.NumberSet);
+    expect(afterParse.value).to.be.deep.eq(["1", "0.5", "0.9"]);
   });
 
 });

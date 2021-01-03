@@ -14,6 +14,19 @@ export class Writer<T extends Table> {
   constructor(private tableClass: ITable<T>) {
   }
 
+  public buildPutOperation(
+    record: T,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
+  ) {
+    return {
+      TableName: this.tableClass.metadata.name,
+      Item: Codec.serialize(this.tableClass, record),
+      ...buildCondition(this.tableClass.metadata, options.condition),
+    };
+  }
+
   public async put(
     record: T,
     options: Partial<{
@@ -21,11 +34,8 @@ export class Writer<T extends Table> {
     }> = {},
   ) {
     try {
-      const res = await this.tableClass.metadata.connection.documentClient.put({
-        TableName: this.tableClass.metadata.name,
-        Item: Codec.serialize(this.tableClass, record),
-        ...buildCondition(this.tableClass.metadata, options.condition),
-      }).promise();
+      const operation = this.buildPutOperation(record, options);
+      const res = await this.tableClass.metadata.connection.documentClient.put(operation).promise();
 
       record.setAttributes(res.Attributes || {});
       return record;
@@ -50,17 +60,28 @@ export class Writer<T extends Table> {
     );
   }
 
+  public buildDeleteOperation(
+    record: T,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
+  ) {
+    return {
+      TableName: this.tableClass.metadata.name,
+      Key: KeyFromRecord(record, this.tableClass.metadata.primaryKey),
+      ...buildCondition(this.tableClass.metadata, options.condition),
+    };
+  }
+
   public async delete(
     record: T,
     options: Partial<{
       condition: Conditions<T> | Array<Conditions<T>>;
     }> = {},
   ) {
-    await this.tableClass.metadata.connection.documentClient.delete({
-      TableName: this.tableClass.metadata.name,
-      Key: KeyFromRecord(record, this.tableClass.metadata.primaryKey),
-      ...buildCondition(this.tableClass.metadata, options.condition),
-    }).promise();
+    await this.tableClass.metadata.connection.documentClient.delete(
+      this.buildDeleteOperation(record, options)
+    ).promise();
   }
 }
 

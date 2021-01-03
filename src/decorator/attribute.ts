@@ -1,6 +1,7 @@
 import "reflect-metadata";
 
 import { Attribute as AttributeMetadata } from "../metadata";
+import { NumberSet, StringSet } from "../metadata/attribute";
 import { ITable, Table } from "../table";
 
 // Table Decorator
@@ -31,6 +32,10 @@ function _nativeTypeToAttributeMetadataType(nativeType: any) {
     return AttributeMetadata.Type.Array;
   } else if (nativeType === Object) {
     return AttributeMetadata.Type.Map;
+  } else if (nativeType === StringSet) {
+    return AttributeMetadata.Type.StringSet;
+  } else if (nativeType === NumberSet) {
+    return AttributeMetadata.Type.NumberSet;
   } else {
     throw new Error(`Unsupported type ${nativeType}`);
   }

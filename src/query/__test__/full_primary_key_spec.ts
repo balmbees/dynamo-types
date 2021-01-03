@@ -1,3 +1,4 @@
+import { DynamoDB } from "aws-sdk";
 import { expect } from "chai";
 import { toJS } from "../../__test__/helper";
 
@@ -14,6 +15,7 @@ import {
   Table as TableDecorator,
 } from "../../decorator";
 
+import { NumberSet, StringSet } from "../../metadata/attribute";
 import * as Query from "../index";
 
 describe("FullPrimaryKey", () => {
@@ -31,6 +33,12 @@ describe("FullPrimaryKey", () => {
 
     @AttributeDecorator()
     public count: number;
+
+    @AttributeDecorator()
+    public followers: StringSet;
+
+    @AttributeDecorator()
+    public tags: NumberSet;
   }
 
   let primaryKey: FullPrimaryKey<Card, number, string>;
@@ -253,6 +261,29 @@ describe("FullPrimaryKey", () => {
 
       card = await primaryKey.get(10, "abc");
       expect(card!.count).to.eq(3);
+
+      await primaryKey.update(10, "abc", { followers: ["PUT", new StringSet(["U123", "U456"])] });
+
+      card = await primaryKey.get(10, "abc");
+      expect(card!.followers.toArray()).to.deep.eq(["U123", "U456"]);
+
+      await primaryKey.update(10, "abc", { followers: ["DELETE", new StringSet(["U123"])]});
+      card = await primaryKey.get(10, "abc");
+      expect(card!.followers.toArray()).to.deep.eq(["U456"]);
+
+      await primaryKey.update(10, "abc", { tags: ["PUT", new NumberSet([1, 2, 3])]});
+      card = await primaryKey.get(10, "abc");
+      expect(card!.tags.toArray()).to.deep.eq([1, 2, 3]);
+
+      await primaryKey.update(10, "abc", { tags: ["DELETE", new NumberSet([2])]});
+      card = await primaryKey.get(10, "abc");
+      expect(card!.tags.toArray()).to.deep.eq([1, 3]);
+
+      await primaryKey.update(10, "abc", { followers: ["REMOVE"]});
+
+      card = await primaryKey.get(10, "abc");
+      // tslint:disable-next-line: no-unused-expression
+      expect(card!.followers).to.be.undefined;
     });
 
     context("when condition check was failed", () => {
