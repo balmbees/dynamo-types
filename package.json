@@ -37,7 +37,7 @@
     "@vingle/commitlint-preset": "1.0.3",
     "@vingle/semantic-release-config": "1.0.5",
     "@vingle/tslint-preset": "1.0.1",
-    "chai": "4.3.3",
+    "chai": "4.3.4",
     "check-engine": "1.10.0",
     "faker": "4.1.0",
     "husky": "4.3.8",
