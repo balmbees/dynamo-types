@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/balmbees/dynamo-types#readme",
   "devDependencies": {
-    "@types/chai": "4.2.15",
+    "@types/chai": "4.2.16",
     "@types/faker": "4.1.12",
     "@types/lodash": "4.14.168",
     "@types/mocha": "7.0.2",
