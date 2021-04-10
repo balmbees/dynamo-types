@@ -40,7 +40,7 @@
     "chai": "4.3.4",
     "check-engine": "1.10.0",
     "faker": "4.1.0",
-    "husky": "4.3.8",
+    "husky": "6.0.0",
     "mocha": "7.2.0",
     "tslint": "5.20.1",
     "typescript": "3.9.9"
