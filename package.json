@@ -29,7 +29,7 @@
   "homepage": "https://github.com/balmbees/dynamo-types#readme",
   "devDependencies": {
     "@types/chai": "4.2.16",
-    "@types/faker": "4.1.12",
+    "@types/faker": "5.5.3",
     "@types/lodash": "4.14.168",
     "@types/mocha": "7.0.2",
     "@types/node": "8.10.66",
@@ -39,7 +39,7 @@
     "@vingle/tslint-preset": "1.0.1",
     "chai": "4.3.4",
     "check-engine": "1.10.0",
-    "faker": "4.1.0",
+    "faker": "5.5.3",
     "husky": "4.3.8",
     "mocha": "7.2.0",
     "tslint": "5.20.1",
