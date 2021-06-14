@@ -1,6 +1,6 @@
 {
-  "name": "dynamo-types",
-  "version": "2.10.1",
+  "name": "@balmbees/dynamo-types",
+  "version": "2.12.0",
   "description": "DynamoDB ORM for Typescript",
   "main": "./dst/index.js",
   "typings": "./dst/index.d.ts",
@@ -16,6 +16,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/balmbees/dynamo-types.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
   },
   "engines": {
     "node": ">=8.10.0"

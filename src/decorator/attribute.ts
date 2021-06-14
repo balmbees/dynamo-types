@@ -5,7 +5,7 @@ import { NumberSet, StringSet } from "../metadata/attribute";
 import { ITable, Table } from "../table";
 
 // Table Decorator
-export function Attribute<T>(options: { name?: string, timeToLive?: true } = {}) {
+export function Attribute<T>(options: { name?: string, timeToLive?: true, type?: AttributeMetadata.Type } = {}) {
   return (record: Table, propertyName: string) => {
     const tableClass = (record.constructor as ITable<any>);
     const nativeType = Reflect.getMetadata("design:type", record, propertyName);
@@ -15,7 +15,7 @@ export function Attribute<T>(options: { name?: string, timeToLive?: true } = {})
         name: options.name || propertyName,
         propertyName,
         timeToLive: options.timeToLive,
-        type: _nativeTypeToAttributeMetadataType(nativeType),
+        type: options.type ?? _nativeTypeToAttributeMetadataType(nativeType),
       },
     );
   };

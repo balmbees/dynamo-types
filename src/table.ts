@@ -26,9 +26,9 @@ export class Table {
   }
 
   // raw storage for all attributes this record (instance) has
-  private __attributes: { [key: string]: any } = {}; // tslint:disable-line
+  public __attributes: { [key: string]: any } = {}; // tslint:disable-line
 
-  private __writer: Query.Writer<Table>; // tslint:disable-line
+  public __writer: Query.Writer<Table>; // tslint:disable-line
 
   public getAttribute(name: string, metadata?: Metadata.Table.Metadata) {
     const value = this.__attributes[name];
@@ -68,7 +68,7 @@ export class Table {
       this.setAttribute(name, value);
     });
   }
-  private get writer() {
+  public get writer() {
     if (!this.__writer) {
       this.__writer = new Query.Writer(this.constructor as ITable<Table>);
     }
