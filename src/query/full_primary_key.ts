@@ -249,8 +249,8 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
       },
       UpdateExpression: update.UpdateExpression,
       ConditionExpression: condition.ConditionExpression,
-      ExpressionAttributeNames: _.isEmpty(attributeNames) ? undefined : attributeNames,
-      ExpressionAttributeValues: _.isEmpty(attributeValues) ? undefined : attributeValues,
+      ExpressionAttributeNames: (!(typeof attributeNames === "string") &&  _.isEmpty(attributeNames)) ? undefined : attributeNames,
+      ExpressionAttributeValues: (!(typeof attributeValues === "string") &&  _.isEmpty(attributeValues)) ? undefined : attributeValues,
     };
   }
 
