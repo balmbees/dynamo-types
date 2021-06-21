@@ -249,8 +249,8 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
       },
       UpdateExpression: update.UpdateExpression,
       ConditionExpression: condition.ConditionExpression,
-      ExpressionAttributeNames: (!(typeof attributeNames === "string") &&  _.isEmpty(attributeNames)) ? undefined : attributeNames,
-      ExpressionAttributeValues: (!(typeof attributeValues === "string") &&  _.isEmpty(attributeValues)) ? undefined : attributeValues,
+      ExpressionAttributeNames:  _.isEmpty(attributeNames) ? undefined : attributeNames,
+      ExpressionAttributeValues: _.isEmpty(attributeValues) ? undefined : attributeValues,
     };
   }
 
@@ -262,7 +262,6 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
       condition: Conditions<T> | Array<Conditions<T>>;
     }> = {},
   ): Promise<void> {
-
     await this.tableClass.metadata.connection.documentClient.update(
       this.buildUpdateOperation(hashKey, sortKey, changes, options)
     ).promise();

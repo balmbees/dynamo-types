@@ -186,7 +186,6 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
       condition: Conditions<T> | Array<Conditions<T>>;
     }> = {},
   ): Promise<void> {
-
     await this.tableClass.metadata.connection.documentClient.update(
       this.buildUpdateOperation(hashKey, changes, options)
     ).promise();
