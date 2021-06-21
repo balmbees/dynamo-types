@@ -1,4 +1,5 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import _ = require("lodash");
 import { Config, Table } from ".";
 import { Connection } from "./connections";
 import { Conditions } from "./query";
@@ -45,6 +46,10 @@ export class TransactionWrite {
   }
 
   public async commit() {
+
+    if(_.isEmpty(this.__typedOperation)) {
+      return;
+    }
 
     const items = this.__typedOperation.map((item) => {
       if (item.type === "put") {
