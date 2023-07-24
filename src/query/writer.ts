@@ -33,13 +33,15 @@ export class Writer<T extends Table> {
       condition: Conditions<T> | Array<Conditions<T>>;
     }> = {},
   ) {
+    const operation = this.buildPutOperation(record, options);
     try {
-      const operation = this.buildPutOperation(record, options);
       const res = await this.tableClass.metadata.connection.documentClient.put(operation).promise();
 
       record.setAttributes(res.Attributes || {});
       return record;
     } catch (e) {
+      // tslint:disable-next-line
+      console.log("tried put with params: ", operation);
       // tslint:disable-next-line
       console.log(`Dynamo-Types Put - ${JSON.stringify(record.serialize(), null, 2)}`);
       throw e;
@@ -79,9 +81,17 @@ export class Writer<T extends Table> {
       condition: Conditions<T> | Array<Conditions<T>>;
     }> = {},
   ) {
-    await this.tableClass.metadata.connection.documentClient.delete(
-      this.buildDeleteOperation(record, options)
-    ).promise();
+    const operation = this.buildDeleteOperation(record, options);
+
+    try {
+      await this.tableClass.metadata.connection.documentClient.delete(operation).promise();
+    } catch (error) {
+      // tslint:disable-next-line
+      console.log("tried delete with params: ", operation);
+      // tslint:disable-next-line
+      console.log(`Dynamo-Types Delete - ${JSON.stringify(record.serialize(), null, 2)}`);
+      throw error;
+    }
   }
 }
 
