@@ -25,6 +25,7 @@ export async function batchWrite(
   } catch (e) {
     // tslint:disable-next-line
     console.log(`Dynamo-Types batchWrite on ${tableName} - ${JSON.stringify(requests, null, 2)}`);
+    // tslint:disable-next-line
     console.log("error: ", e);
     throw e;
   }
