@@ -47,7 +47,7 @@ export class TransactionWrite {
 
   public async commit() {
 
-    if(_.isEmpty(this.__typedOperation)) {
+    if (_.isEmpty(this.__typedOperation)) {
       return;
     }
 
@@ -72,6 +72,8 @@ export class TransactionWrite {
         TransactItems: items
       }).promise();
     } catch (e) {
+      // tslint:disable-next-line: no-console
+      console.log("tried transaction write on ", items);
       // tslint:disable-next-line: no-console
       console.log(e);
       throw e;

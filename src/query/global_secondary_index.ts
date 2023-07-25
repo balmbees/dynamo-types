@@ -55,17 +55,24 @@ export class FullGlobalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType
       Object.assign(params.ExpressionAttributeValues, rangeKeyOptions.expressionAttributeValues);
     }
 
-    const result = await this.tableClass.metadata.connection.documentClient.query(params).promise();
-
-    return {
-      records: (result.Items || []).map((item) => {
-        return Codec.deserialize(this.tableClass, item);
-      }),
-      count: result.Count,
-      scannedCount: result.ScannedCount,
-      lastEvaluatedKey: result.LastEvaluatedKey,
-      consumedCapacity: result.ConsumedCapacity,
-    };
+    try {
+      const result = await this.tableClass.metadata.connection.documentClient.query(params).promise();
+      return {
+        records: (result.Items || []).map((item) => {
+          return Codec.deserialize(this.tableClass, item);
+        }),
+        count: result.Count,
+        scannedCount: result.ScannedCount,
+        lastEvaluatedKey: result.LastEvaluatedKey,
+        consumedCapacity: result.ConsumedCapacity,
+      };
+    } catch (error) {
+      // tslint:disable-next-line: no-console
+      console.log("tried query with params: ", params);
+      // tslint:disable-next-line: no-console
+      console.log(error);
+      throw error;
+    }
   }
 
   public async scan(options: {
@@ -84,17 +91,24 @@ export class FullGlobalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType
       Segment: options.segment,
     };
 
-    const result = await this.tableClass.metadata.connection.documentClient.scan(params).promise();
-
-    return {
-      records: (result.Items || []).map((item) => {
-        return Codec.deserialize(this.tableClass, item);
-      }),
-      count: result.Count,
-      scannedCount: result.ScannedCount,
-      lastEvaluatedKey: result.LastEvaluatedKey,
-      consumedCapacity: result.ConsumedCapacity,
-    };
+    try {
+      const result = await this.tableClass.metadata.connection.documentClient.scan(params).promise();
+      return {
+        records: (result.Items || []).map((item) => {
+          return Codec.deserialize(this.tableClass, item);
+        }),
+        count: result.Count,
+        scannedCount: result.ScannedCount,
+        lastEvaluatedKey: result.LastEvaluatedKey,
+        consumedCapacity: result.ConsumedCapacity,
+      };
+    } catch (error) {
+      // tslint:disable-next-line: no-console
+      console.log("tried scan with params: ", params);
+      // tslint:disable-next-line: no-console
+      console.log(error);
+      throw error;
+    }
   }
 }
 
@@ -120,17 +134,24 @@ export class HashGlobalSecondaryIndex<T extends Table, HashKeyType> {
       ConsistentRead: options.consistent,
     };
 
-    const result = await this.tableClass.metadata.connection.documentClient.query(params).promise();
-
-    return {
-      records: (result.Items || []).map((item) => {
-        return Codec.deserialize(this.tableClass, item);
-      }),
-      count: result.Count,
-      scannedCount: result.ScannedCount,
-      lastEvaluatedKey: result.LastEvaluatedKey,
-      consumedCapacity: result.ConsumedCapacity,
-    };
+    try {
+      const result = await this.tableClass.metadata.connection.documentClient.query(params).promise();
+      return {
+        records: (result.Items || []).map((item) => {
+          return Codec.deserialize(this.tableClass, item);
+        }),
+        count: result.Count,
+        scannedCount: result.ScannedCount,
+        lastEvaluatedKey: result.LastEvaluatedKey,
+        consumedCapacity: result.ConsumedCapacity,
+      };
+    } catch (error) {
+      // tslint:disable-next-line: no-console
+      console.log("tried query with params: ", params);
+      // tslint:disable-next-line: no-console
+      console.log(error);
+      throw error;
+    }
   }
 
   public async scan(options: {
@@ -149,17 +170,24 @@ export class HashGlobalSecondaryIndex<T extends Table, HashKeyType> {
       Segment: options.segment,
     };
 
-    const result = await this.tableClass.metadata.connection.documentClient.scan(params).promise();
-
-    return {
-      records: (result.Items || []).map((item) => {
-        return Codec.deserialize(this.tableClass, item);
-      }),
-      count: result.Count,
-      scannedCount: result.ScannedCount,
-      lastEvaluatedKey: result.LastEvaluatedKey,
-      consumedCapacity: result.ConsumedCapacity,
-    };
+    try {
+      const result = await this.tableClass.metadata.connection.documentClient.scan(params).promise();
+      return {
+        records: (result.Items || []).map((item) => {
+          return Codec.deserialize(this.tableClass, item);
+        }),
+        count: result.Count,
+        scannedCount: result.ScannedCount,
+        lastEvaluatedKey: result.LastEvaluatedKey,
+        consumedCapacity: result.ConsumedCapacity,
+      };
+    } catch (error) {
+      // tslint:disable-next-line: no-console
+      console.log("tried scan with params: ", params);
+      // tslint:disable-next-line: no-console
+      console.log(error);
+      throw error;
+    }
   }
 }
 // tslint:enable:max-classes-per-file

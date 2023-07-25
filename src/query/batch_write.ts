@@ -24,7 +24,11 @@ export async function batchWrite(
     );
   } catch (e) {
     // tslint:disable-next-line
-    console.log(`Dynamo-Types batchWrite - ${JSON.stringify(requests, null, 2)}`);
+    console.log("tried batchWrite with params: ", requests);
+    // tslint:disable-next-line
+    console.log(`Dynamo-Types batchWrite on ${tableName} - ${JSON.stringify(requests, null, 2)}`);
+    // tslint:disable-next-line
+    console.log("error: ", e);
     throw e;
   }
 }

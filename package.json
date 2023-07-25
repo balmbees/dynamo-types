@@ -1,6 +1,6 @@
 {
   "name": "@balmbees/dynamo-types",
-  "version": "2.13.0",
+  "version": "2.13.2-beta.0",
   "description": "DynamoDB ORM for Typescript",
   "main": "./dst/index.js",
   "typings": "./dst/index.d.ts",
@@ -9,7 +9,7 @@
     "build": "tsc",
     "postbuild": "cd src && find . -name '*.json' -type f -exec cp {} ../dst/{} \\; && cd ..",
     "test": "env AWS_REGION=us-east-1 AWS_ACCESS_KEY_ID=mock AWS_SECRET_ACCESS_KEY=moc mocha -r ./node_modules/ts-node/register --exit -t 20000 src/**/__test__/**/*.ts",
-    "test:local": "env DYNAMO_TYPES_ENDPOINT=http://127.0.0.1:8000 npm test",
+    "test:local": "env DYNAMO_TYPES_ENDPOINT=http://127.0.0.1:20010 npm test",
     "prepublishOnly": "npm run build",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
