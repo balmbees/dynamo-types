@@ -1,6 +1,6 @@
 {
   "name": "@balmbees/dynamo-types",
-  "version": "2.13.1",
+  "version": "2.13.2-beta.0",
   "description": "DynamoDB ORM for Typescript",
   "main": "./dst/index.js",
   "typings": "./dst/index.d.ts",
