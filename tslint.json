@@ -1,6 +1,28 @@
 {
-    "extends": ["@vingle/tslint-preset"],
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
     "rules": {
-        "interface-name": false
-    }
+        "object-literal-sort-keys": false,
+        "interface-name": false,
+        "whitespace": true,
+        "type-literal-delimiter": true,
+        "ordered-imports": true,
+        "semicolon": [
+            true,
+            "always"
+        ],
+        "trailing-comma": [
+            true,
+            {
+                "multiline": "always",
+                "singleline": "never",
+                "esSpecCompliant": true
+            }
+        ],
+        "arrow-parens": true
+    },
+    "rulesDirectory": []
 }
