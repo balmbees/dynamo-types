@@ -68,7 +68,7 @@ export async function batchGetTrim(
   tableName: string,
   keys: DynamoDB.DocumentClient.KeyList,
 ) {
-  return removeDuplicationFilter(removeFalsyFilter(await __batchGet(documentClient, tableName, keys)));
+  return removeFalsyFilter(await __batchGet(documentClient, tableName, removeDuplicationFilter(keys)));
 }
 
 function removeFalsyFilter<T>(array: Array<T | undefined>) {
