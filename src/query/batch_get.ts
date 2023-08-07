@@ -68,7 +68,7 @@ export async function batchGetTrim(
   tableName: string,
   keys: DynamoDB.DocumentClient.KeyList,
 ) {
-  return removeFalsyFilter(await __batchGet(documentClient, tableName, keys));
+  return removeDuplicationFilter(removeFalsyFilter(await __batchGet(documentClient, tableName, keys)));
 }
 
 function removeFalsyFilter<T>(array: Array<T | undefined>) {
@@ -79,4 +79,8 @@ function removeFalsyFilter<T>(array: Array<T | undefined>) {
     }
   });
   return res;
+}
+
+function removeDuplicationFilter<T>(array: Array<T | undefined>) {
+  return _.uniqWith(array, _.isEqual);
 }
