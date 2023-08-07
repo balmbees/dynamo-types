@@ -121,14 +121,14 @@ describe("HashPrimaryKey", () => {
   });
 
   describe("#batchGet", async () => {
-    it ("should return results in order", async () => {
-      async function createCard() {
-        const card = new Card();
-        card.id = faker.random.number();
-        await card.save();
-        return card;
-      }
+    async function createCard() {
+      const card = new Card();
+      card.id = faker.random.number();
+      await card.save();
+      return card;
+    }
 
+    it ("should return results in order", async () => {
       const cards = [
         await createCard(),
         await createCard(),
@@ -140,6 +140,13 @@ describe("HashPrimaryKey", () => {
 
       // it should keep the order
       expect(result1.map((c) => c.id)).to.deep.eq(cards.map((c) => c.id));
+    });
+
+    it("should remove duplicates", async () => {
+      const card = await createCard();
+      const cards = [card, card, card, card];
+      const result = (await primaryKey.batchGet(cards.map((c) => c.id))).records;
+      expect(result.length).to.eq(1);
     });
   });
 

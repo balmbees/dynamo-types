@@ -168,6 +168,22 @@ describe("FullPrimaryKey", () => {
       expect(items2[2]!.id).to.eq(11);
       expect(items2[2]!.title).to.eq("abc");
     });
+
+    it("should remove duplicates", async () => {
+      await Card.metadata.connection.documentClient.put({
+        TableName: Card.metadata.name,
+        Item: {
+          id: 10,
+          title: "abc",
+        },
+      }).promise();
+
+      const result = (await primaryKey.batchGet([
+        [10, "abc"],
+        [10, "abc"],
+      ])).records;
+      expect(result.length).to.eq(1);
+    });
   });
 
   describe("#query", () => {
